@@ -9,6 +9,7 @@ export interface Build {
   discordName: string,
   image: [string],
   likes: number,
+  copies: number,
   title: string,
   type: string,
   updated: string,

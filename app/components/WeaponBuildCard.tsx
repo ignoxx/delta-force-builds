@@ -42,10 +42,12 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
     });
   };
 
-  const copyBuildId = () => {
+  const copyBuildId = async () => {
     navigator.clipboard.writeText(build.code)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+    build.copies++
+    await pb.collection("builds").update<Build>(build.id, build)
   }
 
   const handleVote = async () => {

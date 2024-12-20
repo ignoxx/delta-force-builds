@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-async function getBuilds(searchQuery: string, sortOption: string, typeFilter?: string): Promise<Build[]> {
+async function getBuilds(searchQuery: string, sortOption: SortOption, typeFilter?: string): Promise<Build[]> {
   const searchFilter = searchQuery ? `(title ~ "${searchQuery}"  || description ~ "${searchQuery}"  || weapon ~ "${searchQuery}")` : null
   const weaponTypeFilter = typeFilter ? `("${typeFilter}" = type.name)` : null
 
@@ -30,7 +30,7 @@ async function getBuilds(searchQuery: string, sortOption: string, typeFilter?: s
 
   const builds = await pb.collection("builds").getFullList<Build>({
     filter: filter,
-    sort: sortOption === "mostLiked" ? "-likes" : "created",
+    sort: sortOption,
     expand: "type",
   });
 
@@ -39,7 +39,7 @@ async function getBuilds(searchQuery: string, sortOption: string, typeFilter?: s
 
 export async function clientLoader({ request }: ClientActionFunctionArgs) {
   const url = new URL(request.url);
-  const sortOption = url.searchParams.get("sort") || "mostLiked";
+  const sortOption: SortOption = url.searchParams.get("sort") as SortOption || "-likes";
   const searchQuery = url.searchParams.get("query") || "";
 
   const builds = await getBuilds(searchQuery, sortOption)
@@ -48,7 +48,7 @@ export async function clientLoader({ request }: ClientActionFunctionArgs) {
 }
 
 export default function Index() {
-  const [sortOption, setSortOption] = useState<SortOption>("mostLiked")
+  const [sortOption, setSortOption] = useState<SortOption>("-likes")
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [typeFilter, setTypeFilter] = useState<string | undefined>()
   const [builds, setBuilds] = useState(useLoaderData<typeof clientLoader>())

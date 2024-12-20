@@ -14,7 +14,7 @@ interface ImageModalProps {
 export function ImageModal({ images, currentIndex, isOpen, onClose, onNext, onPrev }: ImageModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-5xl">
         <div className="relative">
           <img
             src={images[currentIndex]}
