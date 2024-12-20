@@ -1,3 +1,4 @@
+import { X } from "lucide-react"
 import { Button } from "~/components/ui/button"
 
 const quickFilters = [
@@ -24,6 +25,13 @@ export function FilterButtons({ className, setFilter, selected }: FilterButtonsP
           {filter}
         </Button>
       ))
+      }
+
+      {selected && (
+        <Button key="clear" variant="ghost" size="sm" onClick={() => setFilter("")}>
+          <X />
+        </Button>
+      )
       }
     </div >
   )

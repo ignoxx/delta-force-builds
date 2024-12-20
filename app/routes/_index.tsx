@@ -6,6 +6,7 @@ import { SortDropdown, SortOption } from "~/components/SortDropdown";
 import { SearchInput } from "~/components/SearchInput";
 import { pb } from "~/lib/pb";
 import { Build } from "~/lib/build";
+import { CreateBuildModal } from '~/components/CreateBuildModal';
 
 export const meta: MetaFunction = () => {
   return [
@@ -59,22 +60,25 @@ export default function Index() {
   console.log(builds)
 
   return (
-    <div className="min-h-screen p-4 lg:p-6">
-      <div className="space-y-4 mb-6">
-        <SearchInput onSearch={setSearchQuery} />
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <FilterButtons setFilter={setTypeFilter} selected={typeFilter} />
+    <div className="min-h-screen">
+      <header className="bg-background border-b p-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold">Delta Force Loadouts</h1>
+        <CreateBuildModal />
+      </header>
+      <main className="p-4 lg:p-6">
+        <div className="space-y-4 mb-6">
+          <SearchInput onSearch={setSearchQuery} />
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <FilterButtons setFilter={setTypeFilter} selected={typeFilter} />
+            <SortDropdown onSort={setSortOption} currentSort={sortOption} />
+          </div>
         </div>
-        <div className="flex flex-wrap items-end justify-end gap-2">
-          <SortDropdown onSort={setSortOption} currentSort={sortOption} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {builds.map((build) => (
+            <WeaponBuildCard key={build.id} build={build} />
+          ))}
         </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {builds.map((build) => (
-          <WeaponBuildCard key={build.id} build={build} />
-        ))}
-      </div>
-    </div>
-  )
+      </main>
+    </div>)
 }
 
