@@ -15,8 +15,17 @@ export const meta: MetaFunction = () => {
 };
 
 async function getBuilds(searchQuery: string, sortOption: string, typeFilter?: string): Promise<Build[]> {
-  let filter = searchQuery.length > 0 ? `title ~ "${searchQuery}" || description ~ "${searchQuery}"` : ""
-  filter += typeFilter ? `type.name = "${typeFilter}"` : ""
+  const searchFilter = searchQuery ? `(title ~ "${searchQuery}"  || description ~ "${searchQuery}"  || weapon ~ "${searchQuery}")` : null
+  const weaponTypeFilter = typeFilter ? `("${typeFilter}" = type.name)` : null
+
+  let filter = ""
+  if (searchFilter && weaponTypeFilter) {
+    filter = `${searchFilter} && ${weaponTypeFilter}`
+  } else if (searchFilter) {
+    filter = searchFilter
+  } else if (weaponTypeFilter) {
+    filter = weaponTypeFilter
+  }
 
   const builds = await pb.collection("builds").getFullList<Build>({
     filter: filter,
@@ -44,9 +53,7 @@ export default function Index() {
   const [builds, setBuilds] = useState(useLoaderData<typeof clientLoader>())
 
   useMemo(async () => {
-    console.log("REFETCHING with", searchQuery, sortOption, typeFilter)
     setBuilds(await getBuilds(searchQuery, sortOption, typeFilter))
-
   }, [searchQuery, sortOption, typeFilter])
 
   console.log(builds)
@@ -62,7 +69,7 @@ export default function Index() {
           <SortDropdown onSort={setSortOption} currentSort={sortOption} />
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {builds.map((build) => (
           <WeaponBuildCard key={build.id} build={build} />
         ))}

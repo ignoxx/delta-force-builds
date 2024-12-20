@@ -18,6 +18,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious
 } from "~/components/ui/carousel"
 import { Build } from "~/lib/build";
 import { pb } from '~/lib/pb'
@@ -29,7 +31,7 @@ interface WeaponBuildCardProps {
 
 export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
   const [copied, setCopied] = useState(false)
-  const [likes] = useState(build.likes)
+  const [likes, setLikes] = useState(build.likes)
   const [imageLoading, setImageLoading] = useState<boolean[]>(() =>
     build.image.map(() => true)
   );
@@ -48,7 +50,12 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handleVote = () => { }
+  const handleVote = async () => {
+    const e = document.getElementById(`like-${build.id}`)
+    e?.setAttribute("disabled", "")
+    setLikes(build.likes += 1);
+    await pb.collection("builds").update<Build>(build.id, build)
+  }
 
   const pics = function(fullHeight: boolean): React.ReactNode {
     return (
@@ -81,12 +88,12 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
             <p className="text-sm text-muted-foreground"><Badge variant="secondary">{build.weapon.toUpperCase()}</Badge> by @{build.author} </p>
           </div>
           <Button
+            id={`like-${build.id}`}
             size="sm"
             variant="ghost"
-            className="px-0"
             onClick={() => handleVote()}
           >
-            <ArrowUp className="h-4 w-4 mr-1" />
+            <ArrowUp />
             {likes}
           </Button>
         </div>
@@ -121,6 +128,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
                         <Skeleton className="w-full h-full rounded-md" />
                       ) : (
                         <img
+                          loading='lazy'
                           src={`${pb.files.getURL(build, imageSrc)}`}
                           alt={`${build.title} i-${index}`}
                           className="max-h-[70vh] w-auto object-contain rounded-md"
