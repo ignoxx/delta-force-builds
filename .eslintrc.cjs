@@ -62,7 +62,7 @@ module.exports = {
             extensions: [".ts", ".tsx"],
           },
           typescript: {
-            alwaysTryTypes: true,
+            alwaysTryTypes: false,
           },
         },
       },
