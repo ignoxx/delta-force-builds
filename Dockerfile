@@ -12,7 +12,7 @@ RUN npm run build
 # Build Go application
 FROM golang:1.23 AS builder
 
-WORKDIR /go/src/app
+WORKDIR /app
 
 COPY . .
 COPY --from=node-builder /app/build ./build
@@ -26,7 +26,7 @@ FROM alpine:latest AS runner
 
 WORKDIR /app
 
-COPY --from=builder /bin/main /app/main
+COPY --from=builder /bin/main /bin/main
 
 RUN apk add --no-cache \
     unzip \
@@ -40,4 +40,4 @@ RUN apk add --no-cache \
 
 EXPOSE 8080
 
-ENTRYPOINT ["/app/main", "serve", "--http=0.0.0.0:8080"]
+ENTRYPOINT ["/bin/main", "serve", "--http=0.0.0.0:8080"]
