@@ -14,8 +14,7 @@ FROM golang:1.23 AS builder
 
 WORKDIR /app
 
-COPY . .
-COPY --from=node-builder /app/build ./build
+COPY --from=node-builder /app .
 
 RUN go build -ldflags="-s -w" -o main
 
@@ -26,11 +25,10 @@ FROM alpine:latest AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/main main
+COPY --from=builder /app/main .
+RUN chmod +x main
 
-RUN apk add --no-cache \
-    unzip \
-    ca-certificates
+RUN apk add --no-cache ca-certificates
 
 # Uncomment to copy the local pb_migrations dir into the image
 # COPY ./pb_migrations /pb/pb_migrations
@@ -40,4 +38,4 @@ RUN apk add --no-cache \
 
 EXPOSE 8080
 
-ENTRYPOINT ["./main", "serve", "--http=0.0.0.0:8080"]
+ENTRYPOINT ["/app/main", "serve", "--http=0.0.0.0:8080"]
