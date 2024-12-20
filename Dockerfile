@@ -17,16 +17,16 @@ WORKDIR /app
 COPY . .
 COPY --from=node-builder /app/build ./build
 
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /bin/main
+RUN go build -ldflags="-s -w" -o main
 
-RUN chmod +x /bin/main
+RUN chmod +x main
 
 # Runner
 FROM alpine:latest AS runner
 
 WORKDIR /app
 
-COPY --from=builder /bin/main /bin/main
+COPY --from=builder /app/main main
 
 RUN apk add --no-cache \
     unzip \
@@ -40,4 +40,4 @@ RUN apk add --no-cache \
 
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/main", "serve", "--http=0.0.0.0:8080"]
+ENTRYPOINT ["./main", "serve", "--http=0.0.0.0:8080"]
