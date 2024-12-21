@@ -31,6 +31,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script defer data-domain="deltaforce-builds.ignoxx.dev" src="https://plausible.ignoxx.dev/js/script.tagged-events.js"></script>
       </head>
       <body className="font-inter">
         <ThemeProvider>

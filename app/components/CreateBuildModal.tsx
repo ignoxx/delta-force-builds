@@ -47,7 +47,7 @@ export function CreateBuildModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant='secondary'>Create Build</Button>
+        <Button className='plausible-event-name=Build+create' variant='secondary'>Create Build</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -111,7 +111,7 @@ export function CreateBuildModal() {
             <Input id="discordName" placeholder='@sniperbeast69' />
           </div>
           <div className="flex justify-center">
-            <Button type="submit" className='w-2/4'> Submit</Button>
+            <Button type="submit" className='w-2/4 plausible-event-name=Build+create+submited'> Submit</Button>
           </div>
         </form>
       </DialogContent>

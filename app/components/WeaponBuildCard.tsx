@@ -73,7 +73,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
               id={`like-${build.id}`}
               size="sm"
               variant="ghost"
-              className="px-2"
+              className="px-2 plausible-event-name=Build+liked"
               onClick={handleVote}
             >
               <ThumbsUp className="h-4 w-4 mr-1" />
@@ -116,7 +116,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
         </p>
       </CardContent>
       <CardFooter>
-        <Button className="w-full" variant="outline" onClick={copyBuildId}>
+        <Button className="w-full plausible-event-name=Build+copied" variant="outline" onClick={copyBuildId}>
           {copied ? (
             <>
               <Check /> Copied
