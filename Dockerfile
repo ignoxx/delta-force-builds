@@ -28,4 +28,4 @@ RUN chmod +x main
 
 EXPOSE 8080
 
-ENTRYPOINT ["/app/main", "serve", "--http=0.0.0.0:8080"]
+ENTRYPOINT ["/app/main", "serve", "--http=0.0.0.0:8080", "--dir=/pb/pb_data"]
