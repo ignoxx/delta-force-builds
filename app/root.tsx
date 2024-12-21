@@ -29,6 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="google-site-verification" content="KLWKDmdQz2F5xlHRDSF1YyihBSCpDzr5dP8tVtrO5mo" />
         <Meta />
         <Links />
         <script defer data-domain="deltaforce-builds.ignoxx.dev" src="https://plausible.ignoxx.dev/js/script.tagged-events.js"></script>
