@@ -16,19 +16,9 @@ WORKDIR /app
 
 COPY --from=node-builder /app .
 
-RUN go build -ldflags="-s -w" -o main
+RUN go build -o main
 
 RUN chmod +x main
-
-# Runner
-FROM alpine:latest AS runner
-
-WORKDIR /app
-
-COPY --from=builder /app/main .
-RUN chmod +x main
-
-RUN apk add --no-cache ca-certificates
 
 # Uncomment to copy the local pb_migrations dir into the image
 # COPY ./pb_migrations /pb/pb_migrations
