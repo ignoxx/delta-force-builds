@@ -10,7 +10,7 @@ import { pb } from '~/lib/pb'
 import { Build } from '~/lib/build'
 
 const weapons = {
-  AR: ["AK-12", "AKM", "AKS-74", "CAR-15", "SCAR-H", "G3", "AS Val", "K416", "M16A4", "M4A1", "PTR-32", "QBZ95-1", "Type-191", "ASh-12", "M7", "SG 552", "SR-3M", "AUG"],
+  AR: ["AK-12", "AKM", "AKS-74", "CAR-15", "SCAR-H", "G3", "AS Val", "K416", "M16A4", "M4A1", "PTR-32", "QBZ95-1", "Type-191", "ASh-12", "M7", "SG 552", "SR-3M", "AUG", "CI-19"],
   SMG: ["P90", "MP5", "Uzi", "Vector", "SMG-45", "Bizon"],
   Pistol: ["92FS", "Desert Eagle", "G17", "G18", "M1911", "QSZ-92G", ".357 Revolver"],
   Sniper: ["AWM", "R93", "PSG-1", "SR-25", "M700", "SV-98", "SVD", "VSS"],
