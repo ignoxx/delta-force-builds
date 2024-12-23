@@ -2,7 +2,7 @@ import { ClientActionFunctionArgs, MetaFunction, useLoaderData } from '@remix-ru
 import { useState, useMemo } from "react"
 import { WeaponBuildCard } from "~/components/WeaponBuildCard";
 import { FilterButtons } from "~/components/FilterButtons";
-import { SortDropdown, SortOption } from "~/components/SortDropdown";
+import { SortButtons, SortOption } from "~/components/SortButtons";
 import { SearchInput } from "~/components/SearchInput";
 import { pb } from "~/lib/pb";
 import { Build } from "~/lib/build";
@@ -48,7 +48,7 @@ export async function clientLoader({ request }: ClientActionFunctionArgs) {
 }
 
 export default function Index() {
-  const [sortOption, setSortOption] = useState<SortOption>("-likes")
+  const [sortOption, setSortOption] = useState<SortOption>("-copies")
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [typeFilter, setTypeFilter] = useState<string | undefined>()
   const [builds, setBuilds] = useState(useLoaderData<typeof clientLoader>())
@@ -65,13 +65,13 @@ export default function Index() {
         <h1 className="text-xl font-bold">Delta Force Loadouts</h1>
         <CreateBuildModal />
       </header>
-      <main className="p-4 lg:p-6">
-        <div className="space-y-4 mb-6">
+      <main className="p-4 pt-8 lg:p-6 lg:pt-12">
+        <div className="space-y-10 mb-12">
           <SearchInput onSearch={setSearchQuery} />
-          <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <FilterButtons setFilter={setTypeFilter} selected={typeFilter} />
-            <SortDropdown onSort={setSortOption} currentSort={sortOption} />
           </div>
+          <SortButtons setSort={setSortOption} selected={sortOption} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {builds.map((build) => (

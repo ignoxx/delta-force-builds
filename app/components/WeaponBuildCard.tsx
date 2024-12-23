@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 import { Skeleton } from './ui/skeleton'
 import { Button } from "~/components/ui/button"
-import { Copy, Check, ArrowUp, ThumbsUp, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Copy, Check, ArrowUp, ThumbsUp, ChevronLeft, ChevronRight, ArrowDown, Download, MousePointerClick, CopyX, CopyIcon, CopyCheck } from 'lucide-react'
 import { Badge } from "~/components/ui/badge"
 import { ImageModal } from "./ImageModal"
 import { Build } from "~/lib/build";
@@ -15,7 +15,6 @@ interface WeaponBuildCardProps {
 
 export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
   const [copied, setCopied] = useState(false)
-  const [likes, setLikes] = useState(build.likes)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [imageLoading, setImageLoading] = useState<boolean[]>(() =>
@@ -45,15 +44,8 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
   const copyBuildId = async () => {
     navigator.clipboard.writeText(build.code)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => setCopied(false), 1000)
     build.copies++
-    await pb.collection("builds").update<Build>(build.id, build)
-  }
-
-  const handleVote = async () => {
-    const e = document.getElementById(`like-${build.id}`)
-    e?.setAttribute("disabled", "")
-    setLikes(build.likes += 1);
     await pb.collection("builds").update<Build>(build.id, build)
   }
 
@@ -64,21 +56,11 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
           <div>
             <CardTitle className="text-sm">{build.title}</CardTitle>
             <p className="text-sm text-muted-foreground">
-              <Badge variant="secondary">{build.weapon}</Badge>
               @{build.author}
             </p>
           </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              id={`like-${build.id}`}
-              size="sm"
-              variant="ghost"
-              className="px-2 plausible-event-name=Build+liked"
-              onClick={handleVote}
-            >
-              <ThumbsUp className="h-4 w-4 mr-1" />
-              {likes}
-            </Button>
+          <div className="flex flex-col">
+            <Badge variant="secondary">{build.weapon.toUpperCase()}</Badge>
           </div>
         </div>
       </CardHeader>
@@ -116,16 +98,20 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
         </p>
       </CardContent>
       <CardFooter>
-        <Button className="w-full plausible-event-name=Build+copied" variant="outline" onClick={copyBuildId}>
+        <Button className="relative w-full plausible-event-name=Build+copied" variant="outline" onClick={copyBuildId}>
           {copied ? (
             <>
-              <Check /> Copied
+              <Check /> Copied!
             </>
           ) : (
             <>
               <Copy /> Copy Build ID
             </>
           )}
+
+          <div className="absolute inset-0 right-2 top-1/2 -translate-y-1/2 text-gray-700 flex items-center justify-end text-xs text-muted-foreground">
+            (<CopyCheck className='pr-1' /> {build.copies})
+          </div>
         </Button>
       </CardFooter>
       <ImageModal

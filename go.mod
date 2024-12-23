@@ -2,7 +2,10 @@ module github.com/ignoxx/delta-force-builds
 
 go 1.23.4
 
-require github.com/pocketbase/pocketbase v0.23.11
+require (
+	github.com/joho/godotenv v1.5.1
+	github.com/pocketbase/pocketbase v0.23.11
+)
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7 // indirect

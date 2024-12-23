@@ -28,6 +28,11 @@ export function CreateBuildModal() {
     event.preventDefault()
     const tag = await pb.collection("tags").getFirstListItem(`name = "${weaponType}"`)
 
+    const authorName: string = event.target.authorName.value
+    if (authorName[0] === '@') {
+      authorName.replace('@', '')
+    }
+
     pb.collection("builds").create({
       title: event.target.title.value,
       description: event.target.description.value,
@@ -35,8 +40,7 @@ export function CreateBuildModal() {
       type: tag.id,
       weapon: weaponName,
       code: event.target.buildCode.value,
-      author: event.target.authorName.value,
-      discordName: event.target.discordName.value,
+      author: authorName,
     })
 
     setIsOpen(false)
@@ -47,7 +51,7 @@ export function CreateBuildModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className='plausible-event-name=Build+create' variant='secondary'>Create Build</Button>
+        <Button className='plausible-event-name=Build+create' variant='secondary'>Share your build</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -105,10 +109,6 @@ export function CreateBuildModal() {
           <div>
             <Label htmlFor="authorName">Author Name*</Label>
             <Input id="authorName" required placeholder='sniperbeast69' />
-          </div>
-          <div>
-            <Label htmlFor="discordName">Discord Name</Label>
-            <Input id="discordName" placeholder='@sniperbeast69' />
           </div>
           <div className="flex justify-center">
             <Button type="submit" className='w-2/4 plausible-event-name=Build+create+submited'> Submit</Button>
