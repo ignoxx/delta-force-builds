@@ -60,7 +60,7 @@ async function getBuilds(searchQuery: string, sortOption: SortOption, typeFilter
 
 export async function clientLoader({ request }: ClientActionFunctionArgs) {
   const url = new URL(request.url);
-  const sortOption: SortOption = url.searchParams.get("sort") as SortOption || "-likes";
+  const sortOption: SortOption = url.searchParams.get("sort") as SortOption || "-copies";
   const searchQuery = url.searchParams.get("query") || "";
 
   const builds = await getBuilds(searchQuery, sortOption)

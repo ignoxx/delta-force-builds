@@ -7,7 +7,7 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { ArrowUpDown } from 'lucide-react'
 
-export type SortOption = "-created" | "-likes" | "-copies"
+export type SortOption = "-created" | "-copies"
 
 interface SortDropdownProps {
   onSort: (option: SortOption) => void
@@ -17,7 +17,6 @@ interface SortDropdownProps {
 export function SortDropdown({ onSort, currentSort }: SortDropdownProps) {
   const sortOptions: { value: SortOption; label: string }[] = [
     { value: "-created", label: "Newest" },
-    { value: "-likes", label: "Most Liked" },
     { value: "-copies", label: "Most Copied" },
   ]
 

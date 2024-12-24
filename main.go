@@ -2,8 +2,10 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"io/fs"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
@@ -41,6 +43,29 @@ func main() {
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Router.GET("/{path...}", apis.Static(distDirFs, true))
+
+		se.Router.POST("/api/copied/{buildID}", func(e *core.RequestEvent) error {
+			buildID := e.Request.PathValue("buildID")
+
+			record, err := e.App.FindRecordById("builds", buildID)
+			if err != nil {
+				return err
+			}
+
+			fmt.Printf("record: %v\n", record)
+
+			copies, ok := record.Get("copies").(float64)
+			if !ok {
+				return e.JSON(http.StatusInternalServerError, map[string]string{"success": "false"})
+			}
+
+			record.Set("copies", copies+1)
+			if err := e.App.Save(record); err != nil {
+				return err
+			}
+
+			return e.JSON(http.StatusOK, map[string]bool{"success": true})
+		})
 
 		return se.Next()
 	})
