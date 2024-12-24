@@ -7,16 +7,17 @@ import { Textarea } from "~/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Label } from "~/components/ui/label"
 import { pb } from '~/lib/pb'
-import { Build } from '~/lib/build'
+import { WeaponType } from '~/lib/build'
+import { Fingerprint, Hand, LucideMousePointerClick, MousePointer2, MousePointerClick, Pointer, Shapes, Share, Share2 } from 'lucide-react'
 
-const weapons = {
-  AR: ["AK-12", "AKM", "AKS-74", "CAR-15", "SCAR-H", "G3", "AS Val", "K416", "M16A4", "M4A1", "PTR-32", "QBZ95-1", "Type-191", "ASh-12", "M7", "SG 552", "SR-3M", "AUG", "CI-19"],
-  SMG: ["P90", "MP5", "Uzi", "Vector", "SMG-45", "Bizon"],
-  Pistol: ["92FS", "Desert Eagle", "G17", "G18", "M1911", "QSZ-92G", ".357 Revolver"],
-  Sniper: ["AWM", "R93", "PSG-1", "SR-25", "M700", "SV-98", "SVD", "VSS"],
-  Shotgun: ["M1014", "M870", "S12K"],
-  LMG: ["M249", "PKM", "M250"],
-  Rifle: ["G3", "M14", "Mini 14", "SKS"],
+const weapons: Record<WeaponType, string[]> = {
+  AR: ["AKS-74", "M16A4", "CAR-15", "PTR-32", "QBZ95-1", "G3", "AKM", "CI-19", "SCAR-H", "AK-12", "M14", "AUG", "M4A1", "SG552", "AS Val", "K416", "M7", "ASh-12"],
+  SMG: ["UZI", "Bizon", "MP5", "Vityaz", "SR-3M", "P90", "SMG-45", "MP7", "Vector"],
+  Shotgun: ["M870", "M1014", "S12K"],
+  LMG: ["PKM", "M249", "M250"],
+  MR: ["Mini-14", "VSS", "SKS", "SVD", "PSG-1"],
+  SR: ["R93", "M700", "SV-98", "AWM"],
+  Pistol: ["G17", "QSZ-92G", ".357", "93R", "M1911", "Desert Eagle", "G18"],
 }
 
 export function CreateBuildModal() {
@@ -51,7 +52,7 @@ export function CreateBuildModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className='plausible-event-name=Build+create' variant='secondary'>Share your build</Button>
+        <div className='plausible-event-name=Build+create flex justify-start items-center'>Share your build <MousePointerClick className='pl-1' /> </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

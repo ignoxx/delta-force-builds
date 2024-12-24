@@ -8,6 +8,27 @@ import { pb } from "~/lib/pb";
 import { Build } from "~/lib/build";
 import { CreateBuildModal } from '~/components/CreateBuildModal';
 
+// array of paths of pepes in pepes/..
+const pepes: string[] = [
+  "1759-pepe-deletethis.png",
+  "2652-pepe-gun.png",
+  "3168-pepe-gun.png",
+  "3351-pepe-swat.png",
+  "6023-gunscared.png",
+  "7451-pepegunr.png",
+  "7627-garman-pepe.png",
+  "7688-pepegun.png",
+  "8029-peepogun.png",
+  "8509-peepohappygun.png",
+  "9990-pepeclown.png",
+]
+
+function getRandomPepe(): string {
+  return pepes[Math.floor(Math.random() * pepes.length)]
+}
+
+const pepe = getRandomPepe()
+
 export const meta: MetaFunction = () => {
   return [
     { title: "Delta Force - Loadouts" },
@@ -61,9 +82,16 @@ export default function Index() {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-background border-b p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Delta Force Loadouts</h1>
-        <CreateBuildModal />
+      <header className="bg-background p-4 flex justify-center items-center mt-20">
+        <img
+          src={`/pepes/${pepe}`}
+          alt={""}
+          className="w-16 h-16 object-contain rounded-md mr-6"
+        />
+        <div>
+          <h1 className="text-xl font-bold flex flex-shrink items-center justify-center">Loadouts for <span className='pl-1 text-green-400'>Delta Force</span></h1>
+          <div className='text-xs underline text-green-300 opacity-85 cursor-pointer'> <CreateBuildModal /> </div>
+        </div>
       </header>
       <main className="p-4 pt-8 lg:p-6 lg:pt-12">
         <div className="space-y-10 mb-12">

@@ -23,3 +23,5 @@ export interface Type {
   id: string
   name: string
 }
+
+export type WeaponType = "AR" | "SMG" | "Shotgun" | "LMG" | "MR" | "SR" | "Pistol"

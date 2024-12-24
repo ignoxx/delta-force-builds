@@ -1,13 +1,14 @@
 import { Button } from "~/components/ui/button"
+import { WeaponType } from "~/lib/build"
 
-const quickFilters = [
+const quickFilters: WeaponType[] = [
   "AR",
   "SMG",
-  "Pistol",
-  "Sniper",
   "Shotgun",
   "LMG",
-  "Rifle",
+  "MR",
+  "SR",
+  "Pistol",
 ]
 
 interface FilterButtonsProps {
