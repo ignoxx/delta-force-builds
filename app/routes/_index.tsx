@@ -81,7 +81,7 @@ export default function Index() {
   console.log(builds)
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen m-1 lg:m-8">
       <header className="bg-background p-4 flex justify-center items-center mt-20">
         <img
           src={`/pepes/${pepe}`}
