@@ -42,11 +42,13 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
   };
 
   const copyBuildId = async () => {
+    if (copied === true) return;
+
     navigator.clipboard.writeText(build.code)
     setCopied(true)
-    setTimeout(() => setCopied(false), 1000)
+    setTimeout(() => setCopied(false), 2500)
     build.copies++
-    await pb.collection("builds").update<Build>(build.id, build)
+    await pb.send(`/api/copied/${build.id}`, { method: "post" })
   }
 
   return (
