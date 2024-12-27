@@ -2,13 +2,15 @@
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
+import { CardContent } from "~/components/ui/card"
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import { Input } from "~/components/ui/input"
 import { Textarea } from "~/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Label } from "~/components/ui/label"
 import { pb } from '~/lib/pb'
 import { WeaponType } from '~/lib/build'
-import { Fingerprint, Hand, LucideMousePointerClick, MousePointer2, MousePointerClick, Pointer, Shapes, Share, Share2 } from 'lucide-react'
+import { Check, Fingerprint, Globe, Globe2, GlobeLock, Hand, LucideMousePointerClick, MousePointer2, MousePointerClick, Pointer, Shapes, Share, Share2 } from 'lucide-react'
 
 const weapons: Record<WeaponType, string[]> = {
   AR: ["AKS-74", "M16A4", "CAR-15", "PTR-32", "QBZ95-1", "G3", "AKM", "CI-19", "SCAR-H", "AK-12", "M14", "AUG", "M4A1", "SG552", "AS Val", "K416", "M7", "ASh-12"],
@@ -24,6 +26,7 @@ export function CreateBuildModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [weaponType, setWeaponType] = useState("")
   const [weaponName, setWeaponName] = useState("")
+  const [server, setServer] = useState("global")
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -42,6 +45,7 @@ export function CreateBuildModal() {
       weapon: weaponName,
       code: event.target.buildCode.value,
       author: authorName,
+      server
     })
 
     setIsOpen(false)
@@ -56,9 +60,44 @@ export function CreateBuildModal() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Weapon Build</DialogTitle>
+          <DialogTitle>Share your weapon build</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <RadioGroup onValueChange={setServer} defaultValue="global" className="grid grid-cols-2 gap-4">
+              <div>
+                <RadioGroupItem
+                  value="global"
+                  id="global"
+                  className="peer sr-only"
+                  aria-label="Global"
+                />
+                <Label
+                  htmlFor="global"
+                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                >
+                  <Globe className="mb-4 h-6 w-6" />
+                  Global
+                </Label>
+              </div>
+              <div>
+                <RadioGroupItem
+                  value="garena"
+                  id="garena"
+                  className="peer sr-only"
+                  aria-label="Garena"
+                />
+                <Label
+                  htmlFor="garena"
+                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary "
+                >
+                  <GlobeLock className="mb-3 h-6 w-6" />
+                  Garena/China
+                </Label>
+              </div>
+            </RadioGroup>
+
+          </div>
           <div>
             <Label htmlFor="title">Title*</Label>
             <Input id="title" required placeholder='Low recoil, Beast, ..' maxLength={24} />
@@ -73,7 +112,7 @@ export function CreateBuildModal() {
             <Input id="images" type="file" multiple required />
           </div>
           <div>
-            <Label htmlFor="weaponType">Weapon Type</Label>
+            <Label htmlFor="weaponType">Weapon Type*</Label>
             <Select onValueChange={setWeaponType} required>
               <SelectTrigger>
                 <SelectValue placeholder="Select weapon type" />
@@ -90,7 +129,7 @@ export function CreateBuildModal() {
             </Select>
           </div>
           <div>
-            <Label htmlFor="weaponName">Weapon Name</Label>
+            <Label htmlFor="weaponName">Weapon Name*</Label>
             <Select onValueChange={setWeaponName} required disabled={weaponType === ""}>
               <SelectTrigger>
                 <SelectValue placeholder="Select weapon name" />

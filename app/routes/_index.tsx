@@ -7,6 +7,8 @@ import { SearchInput } from "~/components/SearchInput";
 import { pb } from "~/lib/pb";
 import { Build } from "~/lib/build";
 import { CreateBuildModal } from '~/components/CreateBuildModal';
+import { ServerFilterButtons } from '~/components/ServerButtons';
+import { Separator } from "~/components/ui/separator";
 
 // array of paths of pepes in pepes/..
 const pepes: string[] = [
@@ -32,21 +34,22 @@ const pepe = getRandomPepe()
 export const meta: MetaFunction = () => {
   return [
     { title: "Delta Force - Loadouts" },
-    { name: "description", content: "Welcome to Remix!" },
+    { name: "description", content: "Explore and share you build codes for Warfare and Operation modes!" },
   ];
 };
 
-async function getBuilds(searchQuery: string, sortOption: SortOption, typeFilter?: string): Promise<Build[]> {
-  const searchFilter = searchQuery ? `(title ~ "${searchQuery}"  || description ~ "${searchQuery}"  || weapon ~ "${searchQuery}")` : null
+async function getBuilds(searchQuery: string, sortOption: SortOption, typeFilter?: string, serverFilter?: string): Promise<Build[]> {
+  const searchFilter = searchQuery ? `(title ~ "${searchQuery}"  || description ~ "${searchQuery}"  || weapon ~ "${searchQuery}" || author ~ "${searchQuery}")` : null
   const weaponTypeFilter = typeFilter ? `("${typeFilter}" = type.name)` : null
+  const gameServerFilter = serverFilter ? `("${serverFilter}" ~ server)` : null
 
+  const allFilters = Array.from([searchFilter, weaponTypeFilter, gameServerFilter]).filter((x) => { return x != null })
   let filter = ""
-  if (searchFilter && weaponTypeFilter) {
-    filter = `${searchFilter} && ${weaponTypeFilter}`
-  } else if (searchFilter) {
-    filter = searchFilter
-  } else if (weaponTypeFilter) {
-    filter = weaponTypeFilter
+
+  if (allFilters.length === 1) {
+    filter = allFilters.pop()
+  } else if (allFilters.length > 1) {
+    filter = allFilters.join(" && ")
   }
 
   const builds = await pb.collection("builds").getFullList<Build>({
@@ -60,10 +63,11 @@ async function getBuilds(searchQuery: string, sortOption: SortOption, typeFilter
 
 export async function clientLoader({ request }: ClientActionFunctionArgs) {
   const url = new URL(request.url);
-  const sortOption: SortOption = url.searchParams.get("sort") as SortOption || "-copies";
   const searchQuery = url.searchParams.get("query") || "";
+  const sortOption: SortOption = url.searchParams.get("sort") as SortOption || "-copies";
+  const serverFilter = url.searchParams.get("server") || "global";
 
-  const builds = await getBuilds(searchQuery, sortOption)
+  const builds = await getBuilds(searchQuery, sortOption, serverFilter)
 
   return builds;
 }
@@ -72,13 +76,12 @@ export default function Index() {
   const [sortOption, setSortOption] = useState<SortOption>("-copies")
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [typeFilter, setTypeFilter] = useState<string | undefined>()
+  const [serverFilter, setServerFilter] = useState<string | undefined>("global")
   const [builds, setBuilds] = useState(useLoaderData<typeof clientLoader>())
 
   useMemo(async () => {
-    setBuilds(await getBuilds(searchQuery, sortOption, typeFilter))
-  }, [searchQuery, sortOption, typeFilter])
-
-  console.log(builds)
+    setBuilds(await getBuilds(searchQuery, sortOption, typeFilter, serverFilter))
+  }, [searchQuery, sortOption, typeFilter, serverFilter])
 
   return (
     <div className="min-h-screen m-1 lg:m-8">
@@ -96,12 +99,14 @@ export default function Index() {
       <main className="p-4 pt-8 lg:p-6 lg:pt-12">
         <div className="space-y-10 mb-12">
           <SearchInput onSearch={setSearchQuery} />
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <ServerFilterButtons setFilter={setServerFilter} selected={serverFilter} />
+            <Separator className='max-w-60' />
             <FilterButtons setFilter={setTypeFilter} selected={typeFilter} />
           </div>
           <SortButtons setSort={setSortOption} selected={sortOption} />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
           {builds.map((build) => (
             <WeaponBuildCard key={build.id} build={build} />
           ))}

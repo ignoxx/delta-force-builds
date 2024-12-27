@@ -23,3 +23,4 @@ export interface Type {
 }
 
 export type WeaponType = "AR" | "SMG" | "Shotgun" | "LMG" | "MR" | "SR" | "Pistol"
+export type ServerType = "global" | "garena/china"
