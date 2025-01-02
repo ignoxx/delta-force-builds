@@ -1,16 +1,14 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
-import { CardContent } from "~/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import { Input } from "~/components/ui/input"
 import { Textarea } from "~/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Label } from "~/components/ui/label"
 import { pb } from '~/lib/pb'
-import { WeaponType } from '~/lib/build'
-import { Check, Fingerprint, Globe, Globe2, GlobeLock, Hand, LucideMousePointerClick, MousePointer2, MousePointerClick, Pointer, Shapes, Share, Share2 } from 'lucide-react'
+import { WeaponType, weaponTypes } from '~/lib/build'
+import { Globe, GlobeLock, MousePointerClick } from 'lucide-react'
 
 const weapons: Record<WeaponType, string[]> = {
   AR: ["AKS-74", "M16A4", "CAR-15", "PTR-32", "QBZ95-1", "G3", "AKM", "CI-19", "SCAR-H", "AK-12", "M14", "AUG", "M4A1", "SG552", "AS Val", "K416", "M7", "ASh-12"],
@@ -118,13 +116,11 @@ export function CreateBuildModal() {
                 <SelectValue placeholder="Select weapon type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="AR">AR</SelectItem>
-                <SelectItem value="SMG">SMG</SelectItem>
-                <SelectItem value="Pistol">Pistol</SelectItem>
-                <SelectItem value="Sniper">Sniper</SelectItem>
-                <SelectItem value="Shotgun">Shotgun</SelectItem>
-                <SelectItem value="LMG">LMG</SelectItem>
-                <SelectItem value="Rifle">Rifle</SelectItem>
+                {
+                  weaponTypes.map((type) => {
+                    return (<SelectItem key={type} value={type} > {type}</SelectItem>)
+                  })
+                }
               </SelectContent>
             </Select>
           </div>
