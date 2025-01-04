@@ -69,7 +69,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
       <CardContent className="flex-grow">
         <div className="relative">
           <img
-            src={pb.files.getURL(build, build.image[currentImageIndex])}
+            src={pb.files.getURL(build, build.image[currentImageIndex], { thumb: "0x200" })}
             alt={`${build.title} - img ${currentImageIndex + 1}`}
             className="w-full h-48 object-cover mb-2 rounded-md cursor-pointer"
             onClick={() => setIsModalOpen(true)}
@@ -117,7 +117,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
         </Button>
       </CardFooter>
       <ImageModal
-        images={build.image.map((img) => { return pb.files.getURL(build, img) })}
+        images={build.image.map((img) => { return pb.files.getURL(build, img, { thumb: "0x600" }) })}
         currentIndex={currentImageIndex}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
