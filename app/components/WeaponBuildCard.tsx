@@ -68,13 +68,21 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
       </CardHeader>
       <CardContent className="flex-grow">
         <div className="relative">
+
+          {imageLoading[currentImageIndex] && (
+            <Skeleton className='w-full h-48 object-cover mb-2 rounded-md cursor-pointer' />
+          )}
+
           <img
             src={pb.files.getURL(build, build.image[currentImageIndex], { thumb: "0x200" })}
             alt={`${build.title} - img ${currentImageIndex + 1}`}
-            className="w-full h-48 object-cover mb-2 rounded-md cursor-pointer"
+            className={`w-full h-48 object-cover mb-2 rounded-md cursor-pointer`}
+            hidden={imageLoading[currentImageIndex]}
             onClick={() => setIsModalOpen(true)}
+            onLoad={() => handleImageLoad(currentImageIndex)}
           />
-          {build.image.length > 1 && (
+
+          {!imageLoading[currentImageIndex] && (build.image.length > 1 && (
             <>
               <Button
                 size="icon"
@@ -93,7 +101,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </>
-          )}
+          ))}
         </div>
         <p className="text-xs text-muted-foreground h-12 overflow-y-clip">
           {build.description || "No description available."}
