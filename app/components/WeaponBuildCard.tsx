@@ -126,11 +126,9 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
       </CardFooter>
       <ImageModal
         images={build.image.map((img) => { return pb.files.getURL(build, img, { thumb: "0x600" }) })}
-        currentIndex={currentImageIndex}
+        index={currentImageIndex}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onNext={nextImage}
-        onPrev={prevImage}
       />
     </Card>
   )
