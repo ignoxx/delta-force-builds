@@ -7,8 +7,12 @@ import { Textarea } from "~/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Label } from "~/components/ui/label"
 import { pb } from '~/lib/pb'
-import { WeaponType, weaponTypes } from '~/lib/build'
-import { Globe, GlobeLock, MousePointerClick } from 'lucide-react'
+import { Build, WeaponType, weaponTypes } from '~/lib/build'
+import { Globe, GlobeLock, Loader2, MousePointerClick } from 'lucide-react'
+
+interface ModalProps {
+  updateBuilds: (build: Build) => void
+}
 
 const weapons: Record<WeaponType, string[]> = {
   AR: ["AKS-74", "M16A4", "CAR-15", "PTR-32", "QBZ95-1", "G3", "AKM", "CI-19", "SCAR-H", "AK-12", "M14", "AUG", "M4A1", "SG552", "AS Val", "K416", "M7", "ASh-12"],
@@ -20,13 +24,14 @@ const weapons: Record<WeaponType, string[]> = {
   Pistol: ["G17", "QSZ-92G", ".357", "93R", "M1911", "Desert Eagle", "G18"],
 }
 
-export function CreateBuildModal() {
+export function CreateBuildModal({ updateBuilds }: ModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [weaponType, setWeaponType] = useState("")
   const [weaponName, setWeaponName] = useState("")
   const [server, setServer] = useState("global")
   const [warfareMode, setWarfareMode] = useState(false)
   const [operationMode, setOperationMode] = useState(false)
+  const [creating, setIsCreating] = useState(false)
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -52,7 +57,8 @@ export function CreateBuildModal() {
       return
     }
 
-    pb.collection("builds").create({
+    setIsCreating(true)
+    const newBuild: Build = await pb.collection("builds").create({
       title: event.target.title.value,
       description: event.target.description.value,
       image: Array.from(event.target.images.files),
@@ -65,11 +71,13 @@ export function CreateBuildModal() {
     })
 
     setIsOpen(false)
+    setIsCreating(false)
     setWeaponType("")
     setWeaponName("")
     setWarfareMode(false)
     setOperationMode(false)
     setServer("global")
+    updateBuilds(newBuild)
   }
 
   return (
@@ -199,7 +207,14 @@ export function CreateBuildModal() {
             <Input id="authorName" required placeholder='sniperbeast69' />
           </div>
           <div className="flex justify-center">
-            <Button type="submit" className='w-2/4 plausible-event-name=Build+create+submited'> Submit</Button>
+            {!creating && <Button type="submit" className='w-2/4 plausible-event-name=Build+create+submited'> Submit</Button>}
+            {creating &&
+              <Button disabled>
+                <Loader2 className="animate-spin" />
+                Creating..
+              </Button>
+            }
+
           </div>
         </form>
       </DialogContent>

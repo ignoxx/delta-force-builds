@@ -1,5 +1,5 @@
-import { ClientActionFunctionArgs, MetaFunction, useLoaderData } from '@remix-run/react';
-import { useState, useMemo } from "react"
+import { MetaFunction } from '@remix-run/react';
+import { useState, useEffect } from "react"
 import { WeaponBuildCard } from "~/components/WeaponBuildCard";
 import { FilterButtons } from "~/components/FilterButtons";
 import { SortButtons, SortOption } from "~/components/SortButtons";
@@ -38,7 +38,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-async function getBuilds(searchQuery: string, sortOption: SortOption, typeFilter?: string, serverFilter?: string, modeFilter?: string): Promise<Build[]> {
+async function getBuilds(searchQuery?: string, sortOption?: SortOption, typeFilter?: string, serverFilter?: string, modeFilter?: string): Promise<Build[]> {
   const searchFilter = searchQuery ? `(title ~ "${searchQuery}"  || description ~ "${searchQuery}"  || weapon ~ "${searchQuery}" || author ~ "${searchQuery}")` : null
   const weaponTypeFilter = typeFilter ? `(type.name = "${typeFilter}")` : null
   const gameServerFilter = serverFilter ? `(server ~ "${serverFilter}")` : null
@@ -55,22 +55,11 @@ async function getBuilds(searchQuery: string, sortOption: SortOption, typeFilter
 
   const builds = await pb.collection("builds").getFullList<Build>({
     filter: filter,
-    sort: sortOption,
+    sort: sortOption ?? "-copies",
     expand: "type",
   });
 
   return builds
-}
-
-export async function clientLoader({ request }: ClientActionFunctionArgs) {
-  const url = new URL(request.url);
-  const searchQuery = url.searchParams.get("query") || "";
-  const sortOption: SortOption = url.searchParams.get("sort") as SortOption || "-copies";
-  const serverFilter = url.searchParams.get("server") || "global";
-
-  const builds = await getBuilds(searchQuery, sortOption, serverFilter)
-
-  return builds;
 }
 
 export default function Index() {
@@ -79,11 +68,17 @@ export default function Index() {
   const [typeFilter, setTypeFilter] = useState<string | undefined>()
   const [serverFilter, setServerFilter] = useState<string | undefined>("global")
   const [modeFilter, setModeFilter] = useState<string | undefined>()
-  const [builds, setBuilds] = useState(useLoaderData<typeof clientLoader>())
+  const [builds, setBuilds] = useState<Build[]>([])
 
-  useMemo(async () => {
-    setBuilds(await getBuilds(searchQuery, sortOption, typeFilter, serverFilter, modeFilter))
+  useEffect(() => {
+    getBuilds(searchQuery, sortOption, typeFilter, serverFilter, modeFilter).then((builds) => {
+      setBuilds(builds)
+    })
   }, [searchQuery, sortOption, typeFilter, serverFilter, modeFilter])
+
+  const updateBuilds = (build: Build) => {
+    setBuilds([build, ...builds])
+  }
 
   return (
     <div className="min-h-screen m-1 lg:m-8">
@@ -95,7 +90,7 @@ export default function Index() {
         />
         <div>
           <h1 className="text-xl font-bold flex flex-shrink items-center justify-center">Loadouts for <span className='pl-1 text-green-400'>Delta Force</span></h1>
-          <div className='text-xs underline text-green-300 opacity-85 cursor-pointer'> <CreateBuildModal /> </div>
+          <div className='text-xs underline text-green-300 opacity-85 cursor-pointer'> <CreateBuildModal updateBuilds={updateBuilds} /> </div>
         </div>
       </header>
       <main className="p-4 pt-8 lg:p-6 lg:pt-12">
