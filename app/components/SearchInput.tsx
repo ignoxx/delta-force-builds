@@ -15,6 +15,10 @@ export function SearchInput({ onSearch }: SearchInputProps) {
         event.preventDefault()
         inputRef.current?.focus()
       }
+
+      if (event.key === "Escape" && document.activeElement === inputRef.current) {
+        inputRef.current?.blur()
+      }
     }
 
     document.addEventListener("keydown", handleKeyDown)
@@ -26,7 +30,7 @@ export function SearchInput({ onSearch }: SearchInputProps) {
       <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         ref={inputRef}
-        placeholder="Search weapon builds..."
+        placeholder="Type to search... (e. g. Low recoil)"
         className="pl-8 h-12"
         onChange={(e) => onSearch(e.target.value.trim())}
       />

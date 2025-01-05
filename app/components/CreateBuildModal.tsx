@@ -25,6 +25,8 @@ export function CreateBuildModal() {
   const [weaponType, setWeaponType] = useState("")
   const [weaponName, setWeaponName] = useState("")
   const [server, setServer] = useState("global")
+  const [warfareMode, setWarfareMode] = useState(false)
+  const [operationMode, setOperationMode] = useState(false)
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -35,6 +37,21 @@ export function CreateBuildModal() {
       authorName.replace('@', '')
     }
 
+    const modes = []
+    if (warfareMode) {
+      modes.push("warfare")
+    }
+    if (operationMode) {
+      modes.push("operation")
+    }
+
+    if (modes.length === 0) {
+      document.getElementById("mode-label").scrollIntoView()
+      document.getElementById("mode-label").focus()
+      document.getElementById("mode-label").classList.add("text-red-400")
+      return
+    }
+
     pb.collection("builds").create({
       title: event.target.title.value,
       description: event.target.description.value,
@@ -43,12 +60,16 @@ export function CreateBuildModal() {
       weapon: weaponName,
       code: event.target.buildCode.value,
       author: authorName,
-      server
+      server,
+      mode: JSON.stringify(modes)
     })
 
     setIsOpen(false)
     setWeaponType("")
     setWeaponName("")
+    setWarfareMode(false)
+    setOperationMode(false)
+    setServer("global")
   }
 
   return (
@@ -62,7 +83,9 @@ export function CreateBuildModal() {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <RadioGroup onValueChange={setServer} defaultValue="global" className="grid grid-cols-2 gap-4">
+            <Label>Server*</Label>
+            <p className='text-xs text-gray-600 mb-1'> not sure? keep 'Global' </p>
+            <RadioGroup onValueChange={setServer} defaultValue="global" className="grid grid-cols-2 gap-2">
               <div>
                 <RadioGroupItem
                   value="global"
@@ -94,8 +117,37 @@ export function CreateBuildModal() {
                 </Label>
               </div>
             </RadioGroup>
-
           </div>
+
+          <div>
+            <Label id="mode-label">Mode*</Label>
+            <p className='text-xs text-gray-600 mb-1'> select one or more </p>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Button
+                  type='button'
+                  className={`flex flex-col w-full h-full items-center justify-between p-4 border ${warfareMode && "border-primary"} transition duration-0 border-2 focus-visible:ring-0 focus-visible:ring-offset-0`}
+                  aria-label="Warfare"
+                  onClick={() => { setWarfareMode(!warfareMode) }}
+                  variant={"outline"}
+                >
+                  Warfare
+                </Button>
+              </div>
+              <div>
+                <Button
+                  type='button'
+                  className={`flex flex-col w-full h-full items-center justify-between p-4 border ${operationMode && "border-primary"} transition duration-0 border-2 focus-visible:ring-0 focus-visible:ring-offset-0`}
+                  aria-label="Operation"
+                  onClick={() => { setOperationMode(!operationMode) }}
+                  variant={"outline"}
+                >
+                  Operation
+                </Button>
+              </div>
+            </div>
+          </div>
+
           <div>
             <Label htmlFor="title">Title*</Label>
             <Input id="title" required placeholder='Low recoil, Beast, ..' maxLength={24} />

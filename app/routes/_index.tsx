@@ -8,7 +8,7 @@ import { pb } from "~/lib/pb";
 import { Build } from "~/lib/build";
 import { CreateBuildModal } from '~/components/CreateBuildModal';
 import { ServerFilterButtons } from '~/components/ServerButtons';
-import { Separator } from "~/components/ui/separator";
+import { ModeFilterButtons } from '~/components/ModeFilterButtons';
 
 // array of paths of pepes in pepes/..
 const pepes: string[] = [
@@ -38,12 +38,13 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-async function getBuilds(searchQuery: string, sortOption: SortOption, typeFilter?: string, serverFilter?: string): Promise<Build[]> {
+async function getBuilds(searchQuery: string, sortOption: SortOption, typeFilter?: string, serverFilter?: string, modeFilter?: string): Promise<Build[]> {
   const searchFilter = searchQuery ? `(title ~ "${searchQuery}"  || description ~ "${searchQuery}"  || weapon ~ "${searchQuery}" || author ~ "${searchQuery}")` : null
-  const weaponTypeFilter = typeFilter ? `("${typeFilter}" = type.name)` : null
-  const gameServerFilter = serverFilter ? `("${serverFilter}" ~ server)` : null
+  const weaponTypeFilter = typeFilter ? `(type.name = "${typeFilter}")` : null
+  const gameServerFilter = serverFilter ? `(server ~ "${serverFilter}")` : null
+  const gameModeFilter = modeFilter ? `(mode ~ "${modeFilter}")` : null
 
-  const allFilters = Array.from([searchFilter, weaponTypeFilter, gameServerFilter]).filter((x) => { return x != null })
+  const allFilters = Array.from([searchFilter, weaponTypeFilter, gameServerFilter, gameModeFilter]).filter((x) => { return x != null })
   let filter = ""
 
   if (allFilters.length === 1) {
@@ -77,11 +78,12 @@ export default function Index() {
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [typeFilter, setTypeFilter] = useState<string | undefined>()
   const [serverFilter, setServerFilter] = useState<string | undefined>("global")
+  const [modeFilter, setModeFilter] = useState<string | undefined>()
   const [builds, setBuilds] = useState(useLoaderData<typeof clientLoader>())
 
   useMemo(async () => {
-    setBuilds(await getBuilds(searchQuery, sortOption, typeFilter, serverFilter))
-  }, [searchQuery, sortOption, typeFilter, serverFilter])
+    setBuilds(await getBuilds(searchQuery, sortOption, typeFilter, serverFilter, modeFilter))
+  }, [searchQuery, sortOption, typeFilter, serverFilter, modeFilter])
 
   return (
     <div className="min-h-screen m-1 lg:m-8">
@@ -101,8 +103,8 @@ export default function Index() {
           <SearchInput onSearch={setSearchQuery} />
           <div className="flex flex-col items-center justify-center gap-2">
             <ServerFilterButtons setFilter={setServerFilter} selected={serverFilter} />
-            <Separator className='max-w-60' />
             <FilterButtons setFilter={setTypeFilter} selected={typeFilter} />
+            <ModeFilterButtons setFilter={setModeFilter} selected={modeFilter} />
           </div>
           <SortButtons setSort={setSortOption} selected={sortOption} />
         </div>
