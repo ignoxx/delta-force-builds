@@ -1,8 +1,8 @@
 import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
-import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Skeleton } from "./ui/skeleton"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 interface ImageModalProps {
   images: string[]
@@ -15,6 +15,10 @@ export function ImageModal({ images, index, isOpen, onClose }: ImageModalProps) 
   const [imageLoading, setImageLoading] = useState<boolean[]>(() =>
     images.map(() => true)
   );
+
+  useEffect(() => {
+    setCurrentIndex(index)
+  }, [index, isOpen])
 
   const [currentIndex, setCurrentIndex] = useState<number>(index)
 
