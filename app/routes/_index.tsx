@@ -10,7 +10,6 @@ import { CreateBuildModal } from '~/components/CreateBuildModal';
 import { ServerFilterButtons } from '~/components/ServerButtons';
 import { ModeFilterButtons } from '~/components/ModeFilterButtons';
 
-// array of paths of pepes in pepes/..
 const pepes: string[] = [
   "1759-pepe-deletethis.png",
   "2652-pepe-gun.png",

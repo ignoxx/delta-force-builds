@@ -15,6 +15,7 @@ export function ImageModal({ images, index, isOpen, onClose }: ImageModalProps) 
   const [imageLoading, setImageLoading] = useState<boolean[]>(() =>
     images.map(() => true)
   );
+
   const [currentIndex, setCurrentIndex] = useState<number>(index)
 
   const handleImageLoad = (index: number) => {
