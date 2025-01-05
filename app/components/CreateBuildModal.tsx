@@ -207,7 +207,8 @@ export function CreateBuildModal({ updateBuilds }: ModalProps) {
             <Input id="authorName" required placeholder='sniperbeast69' />
           </div>
           <div className="flex justify-center">
-            {!creating && <Button type="submit" className='w-2/4 plausible-event-name=Build+create+submited'> Submit</Button>}
+
+            {!creating && <Button type="submit" onClick={window.plausible("Build create submited")} className='w-2/4 plausible-event-name=Build+create+submited'> Submit</Button>}
             {creating &&
               <Button disabled>
                 <Loader2 className="animate-spin" />
