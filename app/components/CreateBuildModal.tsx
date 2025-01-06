@@ -126,7 +126,7 @@ export function CreateBuildModal({ updateBuilds }: ModalProps) {
       <DialogTrigger asChild>
         <div className='plausible-event-name=Build+create flex justify-start items-center'>Share your build <MousePointerClick className='pl-1' /> </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[100vh] overflow-auto">
         <DialogHeader>
           <DialogTitle>Share your weapon build</DialogTitle>
         </DialogHeader>
