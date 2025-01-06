@@ -52,7 +52,7 @@ export function ImageModal({ images, index, isOpen, onClose }: ImageModalProps) 
           <img
             src={images[currentIndex]}
             alt={`img-${currentIndex + 1}`}
-            className="w-full h-auto"
+            className="w-full h-[600px] object-contain"
             hidden={imageLoading[currentIndex]}
             onLoad={() => { handleImageLoad(currentIndex) }}
           />
