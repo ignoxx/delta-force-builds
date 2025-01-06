@@ -75,10 +75,6 @@ export default function Index() {
     })
   }, [searchQuery, sortOption, typeFilter, serverFilter, modeFilter])
 
-  const updateBuilds = (build: Build) => {
-    setBuilds([build, ...builds])
-  }
-
   return (
     <div className="min-h-screen m-1 lg:m-8">
       <header className="bg-background p-4 flex justify-center items-center mt-20">
@@ -89,7 +85,7 @@ export default function Index() {
         />
         <div>
           <h1 className="text-xl font-bold flex flex-shrink items-center justify-center">Loadouts for <span className='pl-1 text-green-400'>Delta Force</span></h1>
-          <div className='text-xs underline text-green-300 opacity-85 cursor-pointer'> <CreateBuildModal updateBuilds={updateBuilds} /> </div>
+          <div className='text-xs underline text-green-300 opacity-85 cursor-pointer'> <CreateBuildModal /> </div>
         </div>
       </header>
       <main className="p-4 pt-8 lg:p-6 lg:pt-12">

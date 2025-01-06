@@ -7,13 +7,9 @@ import { Textarea } from "~/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Label } from "~/components/ui/label"
 import { pb } from '~/lib/pb'
-import { Build, WeaponType, weaponTypes } from '~/lib/build'
+import { WeaponType, weaponTypes } from '~/lib/build'
 import { Globe, GlobeLock, Loader2, MousePointerClick } from 'lucide-react'
 import { ClientResponseError, RecordModel } from 'pocketbase'
-
-interface ModalProps {
-  updateBuilds: (build: Build) => void
-}
 
 const weapons: Record<WeaponType, string[]> = {
   AR: ["AKS-74", "M16A4", "CAR-15", "PTR-32", "QBZ95-1", "G3", "AKM", "CI-19", "SCAR-H", "AK-12", "M14", "AUG", "M4A1", "SG552", "AS Val", "K416", "M7", "ASh-12"],
@@ -32,7 +28,7 @@ enum CREATE_STATUS {
   FAILED
 }
 
-export function CreateBuildModal({ updateBuilds }: ModalProps) {
+export function CreateBuildModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [weaponType, setWeaponType] = useState("")
   const [weaponName, setWeaponName] = useState("")
@@ -74,7 +70,7 @@ export function CreateBuildModal({ updateBuilds }: ModalProps) {
 
     setCreationStatus(CREATE_STATUS.CREATING)
     try {
-      const newBuild: Build = await pb.collection("builds").create({
+      await pb.collection("builds").create({
         type: tag.id,
         title: event.target.title.value,
         description: event.target.description.value,
@@ -85,8 +81,6 @@ export function CreateBuildModal({ updateBuilds }: ModalProps) {
         server,
         mode: JSON.stringify(modes),
       })
-
-      updateBuilds(newBuild)
 
     } catch (error) {
       setCreationStatus(CREATE_STATUS.FAILED)
