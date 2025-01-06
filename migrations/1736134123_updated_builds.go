@@ -35,12 +35,17 @@ func init() {
 			return err
 		}
 
+		err = app.Save(collection)
+		if err != nil {
+			return err
+		}
+
 		_, err = app.DB().NewQuery("UPDATE builds SET approved = true").Execute()
 		if err != nil {
 			return err
 		}
 
-		return app.Save(collection)
+		return err
 	}, func(app core.App) error {
 		collection, err := app.FindCollectionByNameOrId("pbc_1033968107")
 		if err != nil {
