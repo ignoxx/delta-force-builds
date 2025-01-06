@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
@@ -51,8 +50,6 @@ func main() {
 			if err != nil {
 				return err
 			}
-
-			fmt.Printf("record: %v\n", record)
 
 			copies, ok := record.Get("copies").(float64)
 			if !ok {

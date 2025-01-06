@@ -52,7 +52,7 @@ async function getBuilds(searchQuery?: string, sortOption?: SortOption, typeFilt
     filter = allFilters.join(" && ")
   }
 
-  const builds = await pb.collection("builds").getFullList<Build>({
+  const builds = await pb.collection("builds_view").getFullList<Build>({
     filter: filter,
     sort: sortOption ?? "-copies",
     expand: "type",

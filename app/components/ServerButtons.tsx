@@ -8,7 +8,7 @@ const quickFilters: { filter: ServerType, icon: ReactNode }[] = [
     filter: "global", icon: <Globe />
   },
   {
-    filter: "garena/china", icon: <GlobeLock />
+    filter: "garena", icon: <GlobeLock />
   },
 
 ]

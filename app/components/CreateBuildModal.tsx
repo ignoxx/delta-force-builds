@@ -9,6 +9,7 @@ import { Label } from "~/components/ui/label"
 import { pb } from '~/lib/pb'
 import { Build, WeaponType, weaponTypes } from '~/lib/build'
 import { Globe, GlobeLock, Loader2, MousePointerClick } from 'lucide-react'
+import { ClientResponseError, RecordModel } from 'pocketbase'
 
 interface ModalProps {
   updateBuilds: (build: Build) => void
@@ -24,6 +25,13 @@ const weapons: Record<WeaponType, string[]> = {
   Pistol: ["G17", "QSZ-92G", ".357", "93R", "M1911", "Desert Eagle", "G18"],
 }
 
+enum CREATE_STATUS {
+  NONE,
+  CREATING,
+  SUCCESS,
+  FAILED
+}
+
 export function CreateBuildModal({ updateBuilds }: ModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [weaponType, setWeaponType] = useState("")
@@ -31,11 +39,18 @@ export function CreateBuildModal({ updateBuilds }: ModalProps) {
   const [server, setServer] = useState("global")
   const [warfareMode, setWarfareMode] = useState(false)
   const [operationMode, setOperationMode] = useState(false)
-  const [creating, setIsCreating] = useState(false)
+  const [createStatus, setCreationStatus] = useState<CREATE_STATUS>(CREATE_STATUS.NONE)
+  const [creationError, setCreationError] = useState("")
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
-    const tag = await pb.collection("tags").getFirstListItem(`name = "${weaponType}"`)
+    let tag: RecordModel
+
+    try {
+      tag = await pb.collection("tags").getFirstListItem(`name = "${weaponType}"`)
+    } catch (e) {
+      return
+    }
 
     const authorName: string = event.target.authorName.value
     if (authorName[0] === '@') {
@@ -57,28 +72,53 @@ export function CreateBuildModal({ updateBuilds }: ModalProps) {
       return
     }
 
-    setIsCreating(true)
-    const newBuild: Build = await pb.collection("builds").create({
-      title: event.target.title.value,
-      description: event.target.description.value,
-      image: Array.from(event.target.images.files),
-      type: tag.id,
-      weapon: weaponName,
-      code: event.target.buildCode.value,
-      author: authorName,
-      server,
-      mode: JSON.stringify(modes)
-    })
+    setCreationStatus(CREATE_STATUS.CREATING)
+    try {
+      const newBuild: Build = await pb.collection("builds").create({
+        type: tag.id,
+        title: event.target.title.value,
+        description: event.target.description.value,
+        image: Array.from(event.target.images.files),
+        weapon: weaponName,
+        code: event.target.buildCode.value,
+        author: authorName,
+        server,
+        mode: JSON.stringify(modes),
+      })
 
+      updateBuilds(newBuild)
+
+    } catch (error) {
+      setCreationStatus(CREATE_STATUS.FAILED)
+      if (error instanceof ClientResponseError) {
+        if (error.status === 400) {
+          if (error.response.data?.code?.code === "validation_not_unique") {
+            document.getElementById("buildLabel").scrollIntoView()
+            document.getElementById("buildLabel").focus()
+            document.getElementById("buildLabel").classList.add("text-red-400")
+            setCreationError("Build with this code already exists")
+          }
+        }
+
+        setTimeout(() => { setCreationStatus(CREATE_STATUS.NONE) }, 3000)
+
+        return
+      }
+    }
+
+    // @ts-expect-error "plausible exists"
     window.plausible("Build create submited")
-    setIsOpen(false)
-    setIsCreating(false)
-    setWeaponType("")
-    setWeaponName("")
-    setWarfareMode(false)
-    setOperationMode(false)
-    setServer("global")
-    updateBuilds(newBuild)
+
+    setCreationStatus(CREATE_STATUS.SUCCESS)
+    setTimeout(() => {
+      setIsOpen(false)
+      setCreationStatus(CREATE_STATUS.NONE)
+      setWeaponType("")
+      setWeaponName("")
+      setWarfareMode(false)
+      setOperationMode(false)
+      setServer("global")
+    }, 2000)
   }
 
   return (
@@ -200,7 +240,7 @@ export function CreateBuildModal({ updateBuilds }: ModalProps) {
             </Select>
           </div>
           <div>
-            <Label htmlFor="buildCode">Build Code*</Label>
+            <Label id="buildLabel" htmlFor="buildCode">Build Code*</Label>
             <Input id="buildCode" required placeholder='AKS-74 Assault Rifle-Warfare-6EKL3QO06GGSVELMFER1R' />
           </div>
           <div>
@@ -209,12 +249,25 @@ export function CreateBuildModal({ updateBuilds }: ModalProps) {
           </div>
           <div className="flex justify-center">
 
-            {!creating && <Button type="submit" className='w-2/4 plausible-event-name=Build+create+submited'> Submit</Button>}
-            {creating &&
+            {createStatus == CREATE_STATUS.NONE && <Button type="submit" className='w-2/4 plausible-event-name=Build+create+submited'> Submit</Button>}
+            {createStatus == CREATE_STATUS.CREATING &&
               <Button disabled>
                 <Loader2 className="animate-spin" />
-                Creating..
+                Submiting...
               </Button>
+            }
+            {createStatus == CREATE_STATUS.SUCCESS &&
+              <div className='flex flex-col items-center justify-center'>
+                <p className='text-md text-green-500'> Submited! 🎉</p>
+                <p className='text-xs text-gray-500'> (will be reviewed before)</p>
+              </div>
+            }
+
+            {createStatus == CREATE_STATUS.FAILED &&
+              <div className='flex flex-col items-center justify-center'>
+                <p className='text-md text-red-500'> Oh no! 😢</p>
+                <p className='text-xs text-gray-500'> {creationError || "Something went wrong"}</p>
+              </div>
             }
 
           </div>
