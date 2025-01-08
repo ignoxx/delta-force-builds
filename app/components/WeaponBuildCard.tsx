@@ -2,19 +2,25 @@ import { useState } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 import { Skeleton } from './ui/skeleton'
 import { Button } from "~/components/ui/button"
-import { Copy, Check, ArrowUp, ThumbsUp, ChevronLeft, ChevronRight, ArrowDown, Download, MousePointerClick, CopyX, CopyIcon, CopyCheck } from 'lucide-react'
+import { Copy, Check, ThumbsUp, ChevronLeft, ChevronRight, ThumbsDown, AlertTriangle } from 'lucide-react'
 import { Badge } from "~/components/ui/badge"
 import { ImageModal } from "./ImageModal"
 import { Build } from "~/lib/build";
 import { pb } from '~/lib/pb'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 
 interface WeaponBuildCardProps {
   build: Build
 }
 
+enum CopyState {
+  NONE,
+  COPIED,
+  POST
+}
 
 export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
-  const [copied, setCopied] = useState(false)
+  const [copyState, setCopyState] = useState(CopyState.NONE)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [imageLoading, setImageLoading] = useState<boolean[]>(() =>
@@ -42,14 +48,121 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
   };
 
   const copyBuildId = async () => {
-    if (copied === true) return;
+    if (copyState !== CopyState.NONE) return;
 
-    navigator.clipboard.writeText(build.code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2500)
-    build.copies++
-    await pb.send(`/api/copied/${build.id}`, { method: "post" })
-  }
+    try {
+      await navigator.clipboard.writeText(build.code);
+      setCopyState(CopyState.COPIED);
+      build.copies++;
+      await pb.send(`/api/copied/${build.id}`, { method: "post" });
+
+      // After 2.5 seconds, transition to POST state
+      setTimeout(() => {
+        setCopyState(CopyState.POST);
+      }, 2500);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  };
+
+  const renderButton = () => {
+    switch (copyState) {
+      case CopyState.NONE:
+        return (
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={copyBuildId}
+          >
+            <Copy className='h-4 w-4' />
+            <span className="text-xs">Copy build code</span>
+          </Button>
+        );
+
+      case CopyState.COPIED:
+        return (
+          <Button
+            className="w-full"
+            variant="outline"
+            disabled
+          >
+            <Check className="w-4 h-4" />
+            <span className="text-xs">Copied!</span>
+          </Button>
+        );
+
+      case CopyState.POST:
+        return (
+          <div className="w-full flex justify-evenly items-center gap-2">
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="flex items-center w-full px-1"
+                    variant="outline"
+                    onClick={() => {/* Handle thumbs up */ }}
+                  >
+                    <ThumbsUp className="h-4 w-4" />
+                    <span className="text-xs text-gray-600">{build.likes || 0}</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Like</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="flex items-center w-full  px-1"
+                    variant="outline"
+                    onClick={() => {/* Handle thumbs down */ }}
+                  >
+                    <ThumbsDown className="h-4 w-4" />
+                    <span className="text-xs text-gray-600">{build.dislikes || 0}</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Dislike</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => {/* Handle report */ }}
+                    className="text-yellow-200 hover:text-yellow-300 w-full"
+                  >
+                    <AlertTriangle className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Report broken code</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="flex items-center w-full px-1"
+                    variant="outline"
+                    onClick={copyBuildId}
+                  >
+                    <Copy className="h-4 w-4" />
+                    <span className="text-xs text-gray-600">{build.copies}</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Copy build code</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        );
+    }
+  };
 
   return (
     <Card className="w-full h-full flex flex-col">
@@ -107,22 +220,8 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
           {build.description || "No description available."}
         </p>
       </CardContent>
-      <CardFooter>
-        <Button className="relative w-full plausible-event-name=Build+copied" variant="outline" onClick={copyBuildId}>
-          {copied ? (
-            <>
-              <Check /> Copied!
-            </>
-          ) : (
-            <>
-              <Copy /> Copy Build ID
-            </>
-          )}
-
-          <div className="absolute inset-0 right-2 top-1/2 -translate-y-1/2 text-gray-700 flex items-center justify-end text-xs text-muted-foreground">
-            (<CopyCheck className='pr-1' /> {build.copies})
-          </div>
-        </Button>
+      <CardFooter className="flex justify-center">
+        {renderButton()}
       </CardFooter>
       <ImageModal
         images={build.image.map((img) => { return pb.files.getURL(build, img, { thumb: "0x600" }) })}

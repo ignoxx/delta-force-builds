@@ -8,6 +8,8 @@ export interface Build {
   description: string,
   image: [string],
   copies: number,
+  likes: number,
+  dislikes: number,
   title: string,
   type: string,
   updated: string,
