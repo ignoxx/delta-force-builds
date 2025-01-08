@@ -103,7 +103,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
             </>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground h-12 overflow-y-clip">
+        <p className="text-xs text-muted-foreground h-12 max-h-[100vh] overflow-auto">
           {build.description || "No description available."}
         </p>
       </CardContent>
