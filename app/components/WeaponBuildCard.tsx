@@ -86,6 +86,9 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
     try {
       setReported(true);
       await pb.send(`/api/build/report/${build.id}`, { method: "post" });
+
+      // @ts-expect-error "plausible exists"
+      window.plausible("Build reported")
     } catch (error) {
       console.error('Failed to report:', error);
     }
@@ -97,6 +100,8 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
       setLiked(true);
       setDisliked(true);
       await pb.send(`/api/build/like/${build.id}`, { method: "post" });
+      // @ts-expect-error "plausible exists"
+      window.plausible("Build liked")
     } catch (error) {
       console.error('Failed to like:', error);
     }
@@ -108,6 +113,9 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
       setLiked(true);
       setDisliked(true);
       await pb.send(`/api/build/dislike/${build.id}`, { method: "post" });
+
+      // @ts-expect-error "plausible exists"
+      window.plausible("Build disliked")
     } catch (error) {
       console.error('Failed to dislike:', error);
     }
