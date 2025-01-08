@@ -38,7 +38,7 @@ export const meta: MetaFunction = () => {
 };
 
 async function getBuilds(searchQuery?: string, sortOption?: SortOption, typeFilter?: string, serverFilter?: string, modeFilter?: string): Promise<Build[]> {
-  const searchFilter = searchQuery ? `(title ~ "${searchQuery}"  || description ~ "${searchQuery}"  || weapon ~ "${searchQuery}" || author ~ "${searchQuery}")` : null
+  const searchFilter = searchQuery ? `(title ~ "${searchQuery}"  || description ~ "${searchQuery}"  || weapon ~ "${searchQuery}" || author ~ "${searchQuery}" || code ~ "${searchQuery}")` : null
   const weaponTypeFilter = typeFilter ? `(type.name = "${typeFilter}")` : null
   const gameServerFilter = serverFilter ? `(server ~ "${serverFilter}")` : null
   const gameModeFilter = modeFilter ? `(mode ~ "${modeFilter}")` : null
