@@ -4,16 +4,18 @@ import (
 	"embed"
 	"io/fs"
 	"log"
-	"net/http"
+	"log/slog"
 	"os"
 	"strings"
 
 	"github.com/joho/godotenv"
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 
+	"github.com/ignoxx/delta-force-builds/handlers"
 	_ "github.com/ignoxx/delta-force-builds/migrations"
 )
 
@@ -43,31 +45,35 @@ func main() {
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Router.GET("/{path...}", apis.Static(distDirFs, true))
 
-		se.Router.POST("/api/copied/{buildID}", func(e *core.RequestEvent) error {
-			buildID := e.Request.PathValue("buildID")
-
-			record, err := e.App.FindRecordById("builds", buildID)
-			if err != nil {
-				return err
-			}
-
-			copies, ok := record.Get("copies").(float64)
-			if !ok {
-				return e.JSON(http.StatusInternalServerError, map[string]string{"success": "false"})
-			}
-
-			record.Set("copies", copies+1)
-			if err := e.App.Save(record); err != nil {
-				return err
-			}
-
-			return e.JSON(http.StatusOK, map[string]bool{"success": true})
-		})
+		se.Router.POST("/api/build/copy/{buildID}", handlers.HandleCopy)
+		se.Router.POST("/api/build/like/{buildID}", handlers.HandleLike)
+		se.Router.POST("/api/build/dislike/{buildID}", handlers.HandleDislike)
+		se.Router.POST("/api/build/report/{buildID}", handlers.HandleReport)
 
 		return se.Next()
 	})
 
-	log.Printf("STAGE: %s\n", stage)
+	app.OnRecordAfterUpdateSuccess("reports").BindFunc(func(e *core.RecordEvent) error {
+		count, ok := e.Record.Get("count").(float64)
+		if !ok {
+			app.Logger().Error("count is not a float64")
+			return e.Next()
+		}
+
+		buildID, ok := e.Record.Get("build").(string)
+
+		if count > 20 {
+			app.Logger().Info("report count is greater than 20", slog.String("buildID", buildID))
+			e.App.DB().
+				NewQuery("UPDATE builds SET approved = false WHERE id = {:buildID}").
+				Bind(dbx.Params{"buildID": buildID}).
+				Execute()
+		}
+
+		return e.Next()
+	})
+
+	app.Logger().Info("", slog.String("stage", stage))
 
 	if err := app.Start(); err != nil {
 		log.Fatal(err)

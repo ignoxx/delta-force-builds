@@ -1,10 +1,10 @@
-import { X } from "lucide-react"
 import { Button } from "~/components/ui/button"
 
-export type SortOption = "-created" | "-copies"
+export type SortOption = "-created" | "-copies" | "-likes"
 
 const quickSort: { key: SortOption, value: string }[] = [
   { key: "-copies", value: "Most copied" },
+  { key: "-likes", value: "Most liked" },
   { key: "-created", value: "Most recent" },
 ]
 

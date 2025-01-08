@@ -8,6 +8,8 @@ import { ImageModal } from "./ImageModal"
 import { Build } from "~/lib/build";
 import { pb } from '~/lib/pb'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog'
+import { AlertDialogTrigger } from '@radix-ui/react-alert-dialog'
 
 interface WeaponBuildCardProps {
   build: Build
@@ -16,11 +18,17 @@ interface WeaponBuildCardProps {
 enum CopyState {
   NONE,
   COPIED,
-  POST
+  POST,
+  POST_COPIED
 }
 
 export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
+  const [likes, setLikes] = useState(build.likes)
+  const [liked, setLiked] = useState(false)
+  const [dislikes, setDislikes] = useState(build.dislikes)
+  const [disliked, setDisliked] = useState(false)
   const [copyState, setCopyState] = useState(CopyState.NONE)
+  const [reported, setReported] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [imageLoading, setImageLoading] = useState<boolean[]>(() =>
@@ -48,22 +56,62 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
   };
 
   const copyBuildId = async () => {
-    if (copyState !== CopyState.NONE) return;
-
     try {
       await navigator.clipboard.writeText(build.code);
-      setCopyState(CopyState.COPIED);
-      build.copies++;
-      await pb.send(`/api/copied/${build.id}`, { method: "post" });
+
+      if (copyState === CopyState.NONE) {
+        setCopyState(CopyState.COPIED)
+        build.copies++;
+        await pb.send(`/api/build/copy/${build.id}`, { method: "post" });
+      }
+
+      let duration = 300;
+      if (copyState === CopyState.POST) {
+        setCopyState(CopyState.POST_COPIED)
+        duration = 1000;
+      }
 
       // After 2.5 seconds, transition to POST state
       setTimeout(() => {
         setCopyState(CopyState.POST);
-      }, 2500);
+      }, duration);
     } catch (error) {
       console.error('Failed to copy:', error);
     }
   };
+
+  const report = async () => {
+    if (reported) return;
+
+    try {
+      setReported(true);
+      await pb.send(`/api/build/report/${build.id}`, { method: "post" });
+    } catch (error) {
+      console.error('Failed to report:', error);
+    }
+  }
+
+  const like = async () => {
+    try {
+      setLikes(likes + 1);
+      setLiked(true);
+      setDisliked(true);
+      await pb.send(`/api/build/like/${build.id}`, { method: "post" });
+    } catch (error) {
+      console.error('Failed to like:', error);
+    }
+  }
+
+  const dislike = async () => {
+    try {
+      setDislikes(dislikes + 1);
+      setLiked(true);
+      setDisliked(true);
+      await pb.send(`/api/build/dislike/${build.id}`, { method: "post" });
+    } catch (error) {
+      console.error('Failed to dislike:', error);
+    }
+  }
 
   const renderButton = () => {
     switch (copyState) {
@@ -92,6 +140,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
         );
 
       case CopyState.POST:
+      case CopyState.POST_COPIED:
         return (
           <div className="w-full flex justify-evenly items-center gap-2">
             <TooltipProvider delayDuration={100}>
@@ -100,10 +149,11 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
                   <Button
                     className="flex items-center w-full px-1"
                     variant="outline"
-                    onClick={() => {/* Handle thumbs up */ }}
+                    onClick={like}
+                    disabled={liked}
                   >
                     <ThumbsUp className="h-4 w-4" />
-                    <span className="text-xs text-gray-600">{build.likes || 0}</span>
+                    <span className="text-xs text-gray-600">{likes || 0}</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -116,10 +166,11 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
                   <Button
                     className="flex items-center w-full  px-1"
                     variant="outline"
-                    onClick={() => {/* Handle thumbs down */ }}
+                    onClick={dislike}
+                    disabled={disliked}
                   >
                     <ThumbsDown className="h-4 w-4" />
-                    <span className="text-xs text-gray-600">{build.dislikes || 0}</span>
+                    <span className="text-xs text-gray-600">{dislikes || 0}</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -128,16 +179,34 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
               </Tooltip>
 
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => {/* Handle report */ }}
-                    className="text-yellow-200 hover:text-yellow-300 w-full"
-                  >
-                    <AlertTriangle className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="text-yellow-200 hover:text-yellow-300 w-full"
+                        disabled={reported}
+                      >
+                        <AlertTriangle className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Report build</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will report that the build code is no longer working, continue?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction disabled={reported} onClick={report}>{reported ? "Already reported" : "Continue"}</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+
                 <TooltipContent>
                   <p>Report broken code</p>
                 </TooltipContent>
@@ -150,7 +219,12 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
                     variant="outline"
                     onClick={copyBuildId}
                   >
-                    <Copy className="h-4 w-4" />
+                    {copyState === CopyState.POST_COPIED ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+
                     <span className="text-xs text-gray-600">{build.copies}</span>
                   </Button>
                 </TooltipTrigger>
@@ -159,7 +233,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          </div>
+          </div >
         );
     }
   };
