@@ -8,6 +8,7 @@ interface SearchInputProps {
 
 export function SearchInput({ onSearch }: SearchInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const debouncedSearch = useRef<ReturnType<typeof setTimeout>>()
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -16,12 +17,21 @@ export function SearchInput({ onSearch }: SearchInputProps) {
         inputRef.current?.focus()
       }
 
-      if (event.key === "Escape" && document.activeElement === inputRef.current) {
+      if (["Escape", "Enter"].includes(event.key)
+        && document.activeElement === inputRef.current) {
+        inputRef.current?.blur()
+      }
+    }
+
+    const handleMouseWheel = (event: WheelEvent) => {
+      if (event.deltaY > 0 && document.activeElement === inputRef.current) {
         inputRef.current?.blur()
       }
     }
 
     document.addEventListener("keydown", handleKeyDown)
+    document.addEventListener("wheel", handleMouseWheel)
+
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [])
 
@@ -30,7 +40,7 @@ export function SearchInput({ onSearch }: SearchInputProps) {
       <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         ref={inputRef}
-        placeholder="Type to search... (e. g. Low recoil)"
+        placeholder="Type to search... e. g. `low recoil`, `budget g3`, etc.."
         className="pl-8 h-12"
         onChange={(e) => {
           let input = e.target.value.trim()
@@ -39,7 +49,10 @@ export function SearchInput({ onSearch }: SearchInputProps) {
             input = input.slice(1)
           }
 
-          onSearch(input)
+          clearTimeout(debouncedSearch.current)
+          debouncedSearch.current = setTimeout(() => {
+            onSearch(input)
+          }, 300)
         }}
       />
       <div className="absolute right-2 top-1/2 text-xs flex items-center justify-center -translate-y-1/2">

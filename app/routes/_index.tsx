@@ -52,6 +52,24 @@ async function getBuilds(searchQuery?: string, sortOption?: SortOption, typeFilt
     filter = allFilters.join(" && ")
   }
 
+  let sortFilter: string = sortOption
+  if (sortFilter.startsWith("-")) {
+    sortFilter = sortFilter.split("-")[1]
+  }
+
+  if (!(!searchFilter && !weaponTypeFilter && serverFilter === "global" && !gameModeFilter && sortFilter === "copies")) {
+    // @ts-expect-error "plausible exists"
+    window.plausible('Filter set', {
+      props: {
+        searchFilter: searchQuery,
+        weaponFilter: typeFilter,
+        serverFilter: serverFilter,
+        modeFilter: modeFilter,
+        sortFilter: sortFilter
+      }
+    })
+  }
+
   const builds = await pb.collection("builds_view").getFullList<Build>({
     filter: filter,
     sort: sortOption ?? "-copies",
