@@ -32,7 +32,15 @@ export function SearchInput({ onSearch }: SearchInputProps) {
         ref={inputRef}
         placeholder="Type to search... (e. g. Low recoil)"
         className="pl-8 h-12"
-        onChange={(e) => onSearch(e.target.value.trim())}
+        onChange={(e) => {
+          let input = e.target.value.trim()
+
+          if (input[0] === '@') {
+            input = input.slice(1)
+          }
+
+          onSearch(input)
+        }}
       />
       <div className="absolute right-2 top-1/2 text-xs flex items-center justify-center -translate-y-1/2">
         <div className="bg-gray-900 text-gray-500 rounded-md h-6 w-6 flex items-center justify-center"> / </div>

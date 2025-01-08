@@ -50,7 +50,7 @@ export function CreateBuildModal() {
 
     const authorName: string = event.target.authorName.value
     if (authorName[0] === '@') {
-      authorName.replace('@', '')
+      authorName.slice(1)
     }
 
     const modes = []
