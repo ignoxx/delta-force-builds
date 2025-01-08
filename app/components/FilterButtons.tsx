@@ -21,7 +21,20 @@ export function FilterButtons({ className, setFilter, selected }: FilterButtonsP
   return (
     <div className={`flex flex-wrap justify-center gap-2 ${className}`}>
       {quickFilters.map((filter) => (
-        <Button key={filter} variant={selected == filter ? "secondary" : "outline"} size="sm" onClick={() => filter == selected ? setFilter("") : setFilter(filter)}>
+        <Button key={filter} variant={selected == filter ? "secondary" : "outline"} size="sm" onClick={() => {
+          if (filter !== selected) {
+            setFilter(filter)
+            // @ts-expect-error "plausible exists"
+            window.plausible('Weapon filter set', {
+              props: {
+                filter: filter
+              }
+            })
+          } else {
+            setFilter("")
+          }
+        }}>
+
           {filter} {selected && selected == filter && <span className="text-xs font-thin text-gray-400 flex justify-center">X</span>}
         </Button>
       ))
