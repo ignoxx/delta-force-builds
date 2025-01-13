@@ -11,7 +11,6 @@ import { ServerFilterButtons } from '~/components/ServerButtons';
 import { ModeFilterButtons } from '~/components/ModeFilterButtons';
 
 const pepes: string[] = [
-  "1759-pepe-deletethis.png",
   "2652-pepe-gun.png",
   "3168-pepe-gun.png",
   "3351-pepe-swat.png",
