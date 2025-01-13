@@ -43,7 +43,15 @@ func main() {
 	})
 
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
-		se.Router.GET("/{path...}", apis.Static(distDirFs, true))
+		se.Router.GET("/{path...}", apis.Static(distDirFs, true)).BindFunc(func(e *core.RequestEvent) error {
+
+			// cache the whole shabang
+			if e.Request.PathValue(apis.StaticWildcardParam) != "" {
+				e.Response.Header().Set("Cache-Control", "max-age=1209600, stale-while-revalidate=86400")
+			}
+
+			return e.Next()
+		})
 
 		se.Router.POST("/api/build/copy/{buildID}", handlers.HandleCopy)
 		se.Router.POST("/api/build/like/{buildID}", handlers.HandleLike)
