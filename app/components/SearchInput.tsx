@@ -52,7 +52,7 @@ export function SearchInput({ onSearch }: SearchInputProps) {
           clearTimeout(debouncedSearch.current)
           debouncedSearch.current = setTimeout(() => {
             onSearch(input)
-          }, 300)
+          }, 250)
         }}
       />
       <div className="absolute right-2 top-1/2 text-xs flex items-center justify-center -translate-y-1/2">

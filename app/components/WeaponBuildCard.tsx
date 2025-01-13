@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
-import { Skeleton } from './ui/skeleton'
 import { Button } from "~/components/ui/button"
 import { Copy, Check, ThumbsUp, ThumbsDown, AlertTriangle } from 'lucide-react'
 import { Badge } from "~/components/ui/badge"
@@ -28,11 +27,6 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
   const [disliked, setDisliked] = useState(false)
   const [copyState, setCopyState] = useState(CopyState.NONE)
   const [reported, setReported] = useState(false)
-  const [imageLoading, setImageLoading] = useState<boolean>(true)
-
-  const handleImageLoad = () => {
-    setImageLoading(false);
-  };
 
   const copyBuildId = async () => {
     try {
@@ -242,18 +236,11 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
       </CardHeader>
       <CardContent className="flex-grow">
         <div className="relative">
-
-          {imageLoading && (
-            <Skeleton className='w-full h-48 object-cover mb-2 rounded-md cursor-pointer' />
-          )}
-
           <img
             src={`/weapon/${build.weapon.toLowerCase().replace(" ", "-")}.png`}
             alt={`${build.title} - img ${build.weapon}`}
             className={`w-full h-48 object-contain mb-2 rounded-md no-drag`}
-            hidden={imageLoading}
-            // onClick={() => setIsModalOpen(true)}
-            onLoad={() => handleImageLoad()}
+          // onClick={() => setIsModalOpen(true)}
           />
         </div>
         <p className="text-xs text-muted-foreground h-12 max-h-[100vh] overflow-auto">
