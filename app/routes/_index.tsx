@@ -93,6 +93,11 @@ export default function Index() {
     })
   }, [searchQuery, sortOption, typeFilter, serverFilter, modeFilter])
 
+  const onBuildCreated = (newBuild: Build) => {
+    setBuilds([newBuild, ...builds])
+  };
+
+
   return (
     <div className="min-h-screen m-1 lg:m-8">
       <header className="bg-background p-4 flex justify-center items-center mt-20">
@@ -100,13 +105,13 @@ export default function Index() {
         <img
           src={`/pepes/${pepe}`}
           alt={""}
-          className="w-16 h-16 object-contain rounded-md mr-6"
+          className="w-16 h-16 object-contain rounded-md mr-6 no-drag"
         />
         <div>
           <h1 className="text-xl font-bold flex flex-shrink items-center justify-center">Loadouts for <span className='pl-1 text-green-400'>Delta Force</span></h1>
           <div>
             <div className='flex justify-start items-center gap-1'>
-              <CreateBuildModal className='text-xs underline text-green-300 opacity-85 cursor-pointer' />
+              <CreateBuildModal className='text-xs underline text-green-300 opacity-85 cursor-pointer' onBuildCreated={onBuildCreated} />
               <div className='text-xs text-gray-600 no-underline'> by <a href='https://x.com/moonsteroid' target='_blank' className='underline' rel="noreferrer">@moonsteroid</a></div>
             </div>
           </div>

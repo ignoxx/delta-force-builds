@@ -53,6 +53,11 @@ func main() {
 		return se.Next()
 	})
 
+	app.OnRecordCreate("builds").BindFunc(func(e *core.RecordEvent) error {
+		e.Record.Set("approved", true)
+		return e.Next()
+	})
+
 	app.OnRecordAfterUpdateSuccess("reports").BindFunc(func(e *core.RecordEvent) error {
 		count, ok := e.Record.Get("count").(float64)
 		if !ok {

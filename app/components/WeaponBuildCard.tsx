@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card"
 import { Skeleton } from './ui/skeleton'
 import { Button } from "~/components/ui/button"
-import { Copy, Check, ThumbsUp, ChevronLeft, ChevronRight, ThumbsDown, AlertTriangle } from 'lucide-react'
+import { Copy, Check, ThumbsUp, ThumbsDown, AlertTriangle } from 'lucide-react'
 import { Badge } from "~/components/ui/badge"
-import { ImageModal } from "./ImageModal"
 import { Build } from "~/lib/build";
 import { pb } from '~/lib/pb'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
@@ -29,30 +28,10 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
   const [disliked, setDisliked] = useState(false)
   const [copyState, setCopyState] = useState(CopyState.NONE)
   const [reported, setReported] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [imageLoading, setImageLoading] = useState<boolean[]>(() =>
-    build.image.map(() => true)
-  );
+  const [imageLoading, setImageLoading] = useState<boolean>(true)
 
-  const nextImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === build.image.length - 1 ? 0 : prevIndex + 1
-    )
-  }
-
-  const prevImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? build.image.length - 1 : prevIndex - 1
-    )
-  }
-
-  const handleImageLoad = (index: number) => {
-    setImageLoading((prev) => {
-      const newState = [...prev];
-      newState[index] = false;
-      return newState;
-    });
+  const handleImageLoad = () => {
+    setImageLoading(false);
   };
 
   const copyBuildId = async () => {
@@ -252,7 +231,7 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-sm">{build.title}</CardTitle>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-700">
               @{build.author}
             </p>
           </div>
@@ -264,39 +243,18 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
       <CardContent className="flex-grow">
         <div className="relative">
 
-          {imageLoading[currentImageIndex] && (
+          {imageLoading && (
             <Skeleton className='w-full h-48 object-cover mb-2 rounded-md cursor-pointer' />
           )}
 
           <img
-            src={pb.files.getURL(build, build.image[currentImageIndex], { thumb: "0x200" })}
-            alt={`${build.title} - img ${currentImageIndex + 1}`}
-            className={`w-full h-48 object-cover mb-2 rounded-md cursor-pointer`}
-            hidden={imageLoading[currentImageIndex]}
-            onClick={() => setIsModalOpen(true)}
-            onLoad={() => handleImageLoad(currentImageIndex)}
+            src={`/weapon/${build.weapon.toLowerCase().replace(" ", "-")}.png`}
+            alt={`${build.title} - img ${build.weapon}`}
+            className={`w-full h-48 object-contain mb-2 rounded-md no-drag`}
+            hidden={imageLoading}
+            // onClick={() => setIsModalOpen(true)}
+            onLoad={() => handleImageLoad()}
           />
-
-          {!imageLoading[currentImageIndex] && (build.image.length > 1 && (
-            <>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute left-1 top-1/2 transform -translate-y-1/2"
-                onClick={prevImage}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2"
-                onClick={nextImage}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </>
-          ))}
         </div>
         <p className="text-xs text-muted-foreground h-12 max-h-[100vh] overflow-auto">
           {build.description || "No description available."}
@@ -305,12 +263,6 @@ export function WeaponBuildCard({ build }: WeaponBuildCardProps) {
       <CardFooter className="flex justify-center">
         {renderButton()}
       </CardFooter>
-      <ImageModal
-        images={build.image.map((img) => { return pb.files.getURL(build, img, { thumb: "0x600" }) })}
-        index={currentImageIndex}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </Card>
   )
 }

@@ -7,7 +7,7 @@ import { Textarea } from "~/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Label } from "~/components/ui/label"
 import { pb } from '~/lib/pb'
-import { WeaponType, weaponTypes } from '~/lib/build'
+import { Build, WeaponType, weaponTypes } from '~/lib/build'
 import { Globe, GlobeLock, Loader2, MousePointerClick } from 'lucide-react'
 import { ClientResponseError, RecordModel } from 'pocketbase'
 
@@ -16,7 +16,7 @@ const weapons: Record<WeaponType, string[]> = {
   SMG: ["UZI", "Bizon", "MP5", "Vityaz", "SR-3M", "P90", "SMG-45", "MP7", "Vector"],
   Shotgun: ["M870", "M1014", "S12K"],
   LMG: ["PKM", "M249", "M250"],
-  MR: ["Mini-14", "VSS", "SKS", "SVD", "PSG-1"],
+  MR: ["Mini-14", "VSS", "SKS", "SVD", "PSG-1", "SR-25"],
   SR: ["R93", "M700", "SV-98", "AWM"],
   Pistol: ["G17", "QSZ-92G", ".357", "93R", "M1911", "Desert Eagle", "G18"],
 }
@@ -28,7 +28,7 @@ enum CREATE_STATUS {
   FAILED
 }
 
-export function CreateBuildModal({ className }: { className?: string }) {
+export function CreateBuildModal({ className, onBuildCreated }: { className?: string, onBuildCreated: (build: Build) => void }) {
   const [isOpen, setIsOpen] = useState(false)
   const [weaponType, setWeaponType] = useState("")
   const [weaponName, setWeaponName] = useState("")
@@ -68,13 +68,13 @@ export function CreateBuildModal({ className }: { className?: string }) {
       return
     }
 
+    let newBuild: Build = null
     setCreationStatus(CREATE_STATUS.CREATING)
     try {
-      await pb.collection("builds").create({
+      newBuild = await pb.collection("builds").create<Build>({
         type: tag.id,
         title: event.target.title.value,
         description: event.target.description.value,
-        image: Array.from(event.target.images.files),
         weapon: weaponName,
         code: event.target.buildCode.value,
         author: authorName,
@@ -105,6 +105,7 @@ export function CreateBuildModal({ className }: { className?: string }) {
 
     setCreationStatus(CREATE_STATUS.SUCCESS)
     setTimeout(() => {
+      onBuildCreated(newBuild)
       setIsOpen(false)
       setCreationStatus(CREATE_STATUS.NONE)
       setWeaponType("")
@@ -112,7 +113,7 @@ export function CreateBuildModal({ className }: { className?: string }) {
       setWarfareMode(false)
       setOperationMode(false)
       setServer("global")
-    }, 2000)
+    }, 1800)
   }
 
   return (
@@ -200,11 +201,6 @@ export function CreateBuildModal({ className }: { className?: string }) {
               <Label htmlFor="description">Description</Label>
               <Textarea id="description" placeholder='It just shreds, but really bad in hipfire..' />
             </div>
-            <div >
-              <Label htmlFor="images">Images*</Label>
-              <p className='text-xs text-gray-600'>minimum one </p>
-              <Input id="images" type="file" multiple required />
-            </div>
             <div>
               <Label htmlFor="weaponType">Weapon Type*</Label>
               <Select onValueChange={setWeaponType} required>
@@ -254,7 +250,6 @@ export function CreateBuildModal({ className }: { className?: string }) {
               {createStatus == CREATE_STATUS.SUCCESS &&
                 <div className='flex flex-col items-center justify-center'>
                   <p className='text-md text-green-500'> Submited! 🎉</p>
-                  <p className='text-xs text-gray-500'> (will be reviewed before)</p>
                 </div>
               }
 
