@@ -40,7 +40,7 @@ export function SearchInput({ onSearch }: SearchInputProps) {
       <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         ref={inputRef}
-        placeholder="Type to search... e. g. `low recoil`, `budget g3`, etc.."
+        placeholder="Type to search.. `low recoil`, `budget g3`"
         className="pl-8 h-12"
         onChange={(e) => {
           let input = e.target.value.trim()
