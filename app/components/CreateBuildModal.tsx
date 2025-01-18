@@ -13,10 +13,10 @@ import { ClientResponseError, RecordModel } from 'pocketbase'
 
 const weapons: Record<WeaponType, string[]> = {
   AR: ["AKS-74", "M16A4", "CAR-15", "PTR-32", "QBZ95-1", "G3", "AKM", "CI-19", "SCAR-H", "AK-12", "M14", "AUG", "M4A1", "SG552", "AS Val", "K416", "M7", "ASh-12"],
-  SMG: ["UZI", "Bizon", "MP5", "Vityaz", "SR-3M", "P90", "SMG-45", "MP7", "Vector"],
+  SMG: ["UZI", "Bizon", "MP5", "Vityaz", "SR-3M", "P90", "SMG-45", "MP7", "Vector", "QCQ171"],
   Shotgun: ["M870", "M1014", "S12K"],
-  LMG: ["PKM", "M249", "M250"],
-  MR: ["Mini-14", "VSS", "SKS", "SVD", "PSG-1", "SR-25"],
+  LMG: ["PKM", "M249", "M250", "QJB201"],
+  MR: ["Mini-14", "VSS", "SKS", "SVD", "PSG-1", "SR-25", "SR9"],
   SR: ["R93", "M700", "SV-98", "AWM"],
   Pistol: ["G17", "QSZ-92G", ".357", "93R", "M1911", "Desert Eagle", "G18"],
 }
