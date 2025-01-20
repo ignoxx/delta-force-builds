@@ -9,6 +9,7 @@ import { Build } from "~/lib/build";
 import { CreateBuildModal } from '~/components/CreateBuildModal';
 import { ServerFilterButtons } from '~/components/ServerButtons';
 import { ModeFilterButtons } from '~/components/ModeFilterButtons';
+import { SeasonButtons, SeasonQuickFilter } from '~/components/SeasonButtons';
 
 const pepes: string[] = [
   "2652-pepe-gun.png",
@@ -36,13 +37,14 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-async function getBuilds(searchQuery?: string, sortOption?: SortOption, typeFilter?: string, serverFilter?: string, modeFilter?: string): Promise<Build[]> {
+async function getBuilds(searchQuery?: string, sortOption?: SortOption, typeFilter?: string, serverFilter?: string, modeFilter?: string, seasonFilter?: SeasonQuickFilter): Promise<Build[]> {
   const searchFilter = searchQuery ? `(title ~ "${searchQuery}"  || description ~ "${searchQuery}"  || weapon ~ "${searchQuery}" || author ~ "${searchQuery}" || code ~ "${searchQuery}")` : null
   const weaponTypeFilter = typeFilter ? `(type.name = "${typeFilter}")` : null
   const gameServerFilter = serverFilter ? `(server ~ "${serverFilter}")` : null
   const gameModeFilter = modeFilter ? `(mode ~ "${modeFilter}")` : null
+  const gameSeasonFilter = seasonFilter ? `(${seasonFilter.filter})` : null
 
-  const allFilters = Array.from([searchFilter, weaponTypeFilter, gameServerFilter, gameModeFilter]).filter((x) => { return x != null })
+  const allFilters = Array.from([searchFilter, weaponTypeFilter, gameServerFilter, gameModeFilter, gameSeasonFilter]).filter((x) => { return x != null })
   let filter = ""
 
   if (allFilters.length === 1) {
@@ -64,6 +66,7 @@ async function getBuilds(searchQuery?: string, sortOption?: SortOption, typeFilt
         weaponFilter: typeFilter,
         serverFilter: serverFilter,
         modeFilter: modeFilter,
+        seasonFilter: seasonFilter?.label ?? null,
         sortFilter: sortFilter
       }
     })
@@ -84,13 +87,14 @@ export default function Index() {
   const [typeFilter, setTypeFilter] = useState<string | undefined>()
   const [serverFilter, setServerFilter] = useState<string | undefined>("global")
   const [modeFilter, setModeFilter] = useState<string | undefined>()
+  const [seasonFilter, setSeasonFilter] = useState<SeasonQuickFilter | undefined>()
   const [builds, setBuilds] = useState<Build[]>([])
 
   useEffect(() => {
-    getBuilds(searchQuery, sortOption, typeFilter, serverFilter, modeFilter).then((builds) => {
+    getBuilds(searchQuery, sortOption, typeFilter, serverFilter, modeFilter, seasonFilter).then((builds) => {
       setBuilds(builds)
     })
-  }, [searchQuery, sortOption, typeFilter, serverFilter, modeFilter])
+  }, [searchQuery, sortOption, typeFilter, serverFilter, modeFilter, seasonFilter])
 
   const onBuildCreated = (newBuild: Build) => {
     setBuilds([newBuild, ...builds])
@@ -121,6 +125,7 @@ export default function Index() {
           <SearchInput onSearch={setSearchQuery} />
           <div className="flex flex-col items-center justify-center gap-2">
             <ServerFilterButtons setFilter={setServerFilter} selected={serverFilter} />
+            <SeasonButtons setFilter={setSeasonFilter} selected={seasonFilter} />
             <FilterButtons setFilter={setTypeFilter} selected={typeFilter} />
             <ModeFilterButtons setFilter={setModeFilter} selected={modeFilter} />
           </div>
