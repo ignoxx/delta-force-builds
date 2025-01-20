@@ -6,7 +6,7 @@ export type SeasonQuickFilter = {
 }
 
 const quickFilters: SeasonQuickFilter[] = [
-  { label: "Season 2", filter: "created >= '2025-01-19'" },
+  { label: "Season 3", filter: "created >= '2025-01-19'" },
   { label: "Season 1", filter: "created <= '2025-01-19'" },
 ]
 
