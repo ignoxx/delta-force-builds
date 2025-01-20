@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
@@ -28,8 +28,15 @@ enum CREATE_STATUS {
   FAILED
 }
 
-export function CreateBuildModal({ className, onBuildCreated }: { className?: string, onBuildCreated: (build: Build) => void }) {
-  const [isOpen, setIsOpen] = useState(false)
+type BuildProps = {
+  className?: string
+  onBuildCreated: (build: Build) => void
+
+  isOpen: boolean
+  setIsOpen: (value: boolean) => void
+}
+
+export function CreateBuildModal({ className, onBuildCreated, isOpen, setIsOpen }: BuildProps) {
   const [weaponType, setWeaponType] = useState("")
   const [weaponName, setWeaponName] = useState("")
   const [server, setServer] = useState("global")
@@ -100,6 +107,7 @@ export function CreateBuildModal({ className, onBuildCreated }: { className?: st
       }
     }
 
+
     // @ts-expect-error "plausible exists"
     window.plausible("Build create submited")
 
@@ -119,7 +127,7 @@ export function CreateBuildModal({ className, onBuildCreated }: { className?: st
   return (
     <div className={className}>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
+        <DialogTrigger asChild >
           <div className='plausible-event-name=Build+create flex justify-start items-center'>Share your build <MousePointerClick className='pl-1' /> </div>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] max-h-[100vh] overflow-auto">
@@ -199,7 +207,7 @@ export function CreateBuildModal({ className, onBuildCreated }: { className?: st
             </div>
             <div>
               <Label htmlFor="description">Description</Label>
-              <Textarea id="description" placeholder='It just shreds, but really bad in hipfire..' />
+              <Textarea id="description" placeholder='It just shreds, but really bad in hipfire..' className='min-h-[150px]' />
             </div>
             <div>
               <Label htmlFor="weaponType">Weapon Type*</Label>

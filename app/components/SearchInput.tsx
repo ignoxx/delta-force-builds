@@ -4,15 +4,16 @@ import { Search } from 'lucide-react'
 
 interface SearchInputProps {
   onSearch: (query: string) => void
+  createBuildModalOpen?: boolean
 }
 
-export function SearchInput({ onSearch }: SearchInputProps) {
+export function SearchInput({ onSearch, createBuildModalOpen }: SearchInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const debouncedSearch = useRef<ReturnType<typeof setTimeout>>()
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "/" && document.activeElement !== inputRef.current) {
+      if (!createBuildModalOpen && event.key === "/" && document.activeElement !== inputRef.current) {
         event.preventDefault()
         inputRef.current?.focus()
       }
@@ -33,7 +34,7 @@ export function SearchInput({ onSearch }: SearchInputProps) {
     document.addEventListener("wheel", handleMouseWheel)
 
     return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [])
+  }, [createBuildModalOpen])
 
   return (
     <div className="relative w-full max-w-xl mx-auto">

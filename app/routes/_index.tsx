@@ -88,6 +88,7 @@ export default function Index() {
   const [serverFilter, setServerFilter] = useState<string | undefined>("global")
   const [modeFilter, setModeFilter] = useState<string | undefined>()
   const [seasonFilter, setSeasonFilter] = useState<SeasonQuickFilter | undefined>()
+  const [createBuildModalOpen, setCreateBuildModalOpen] = useState(false)
   const [builds, setBuilds] = useState<Build[]>([])
 
   useEffect(() => {
@@ -114,7 +115,12 @@ export default function Index() {
           <h1 className="text-xl font-bold flex flex-shrink items-center justify-center">Loadouts for <span className='pl-1 text-green-400'>Delta Force</span></h1>
           <div>
             <div className='flex justify-start items-center gap-1'>
-              <CreateBuildModal className='text-xs underline text-green-300 opacity-85 cursor-pointer' onBuildCreated={onBuildCreated} />
+              <CreateBuildModal
+                className='text-xs underline text-green-300 opacity-85 cursor-pointer'
+                onBuildCreated={onBuildCreated}
+                setIsOpen={setCreateBuildModalOpen}
+                isOpen={createBuildModalOpen}
+              />
               <div className='text-xs text-gray-600 no-underline'> by <a href='https://x.com/moonsteroid' target='_blank' className='underline' rel="noreferrer">@moonsteroid</a></div>
             </div>
           </div>
@@ -122,7 +128,7 @@ export default function Index() {
       </header>
       <main className="p-4 pt-8 lg:p-6 lg:pt-12">
         <div className="space-y-10 mb-12">
-          <SearchInput onSearch={setSearchQuery} />
+          <SearchInput onSearch={setSearchQuery} createBuildModalOpen={createBuildModalOpen} />
           <div className="flex flex-col items-center justify-center gap-2">
             <ServerFilterButtons setFilter={setServerFilter} selected={serverFilter} />
             <SeasonButtons setFilter={setSeasonFilter} selected={seasonFilter} />
