@@ -9,8 +9,7 @@ import { Build } from "~/lib/build";
 import { CreateBuildModal } from "~/components/CreateBuildModal";
 import { ServerFilterButtons } from "~/components/ServerButtons";
 import { ModeFilterButtons } from "~/components/ModeFilterButtons";
-import { SeasonButtons, SeasonQuickFilter } from "~/components/SeasonButtons";
-import { tryCatch } from "~/lib/tryCatch";
+import { SeasonQuickFilter } from "~/components/SeasonButtons";
 
 const pepes: string[] = [
   "2652-pepe-gun.png",
@@ -200,10 +199,6 @@ export default function Index() {
             <ServerFilterButtons
               setFilter={setServerFilter}
               selected={serverFilter}
-            />
-            <SeasonButtons
-              setFilter={setSeasonFilter}
-              selected={seasonFilter}
             />
             <FilterButtons setFilter={setTypeFilter} selected={typeFilter} />
             <ModeFilterButtons

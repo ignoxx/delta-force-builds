@@ -9,6 +9,7 @@ const quickFilters: WeaponType[] = [
   "MR",
   "SR",
   "Pistol",
+  "Special",
 ]
 
 interface FilterButtonsProps {

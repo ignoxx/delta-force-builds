@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
@@ -12,13 +12,14 @@ import { Globe, GlobeLock, Loader2, MousePointerClick } from 'lucide-react'
 import { ClientResponseError, RecordModel } from 'pocketbase'
 
 const weapons: Record<WeaponType, string[]> = {
-  AR: ["AKS-74", "M16A4", "CAR-15", "PTR-32", "QBZ95-1", "G3", "AKM", "CI-19", "SCAR-H", "AK-12", "M14", "AUG", "M4A1", "SG552", "AS Val", "K416", "M7", "ASh-12"],
+  AR: ["AKS-74", "M16A4", "CAR-15", "PTR-32", "QBZ95-1", "G3", "AKM", "CI-19", "SCAR-H", "AK-12", "M14", "AUG", "M4A1", "SG552", "AS Val", "K416", "M7", "ASh-12", "K437", "KC17"],
   SMG: ["UZI", "Bizon", "MP5", "Vityaz", "SR-3M", "P90", "SMG-45", "MP7", "Vector", "QCQ171"],
-  Shotgun: ["M870", "M1014", "S12K"],
+  Shotgun: ["M870", "M1014", "S12K", "725"],
   LMG: ["PKM", "M249", "M250", "QJB201"],
   MR: ["Mini-14", "VSS", "SKS", "SVD", "PSG-1", "SR-25", "SR9"],
   SR: ["R93", "M700", "SV-98", "AWM"],
   Pistol: ["G17", "QSZ-92G", ".357", "93R", "M1911", "Desert Eagle", "G18"],
+  Special: ["Compound Bow"]
 }
 
 enum CREATE_STATUS {

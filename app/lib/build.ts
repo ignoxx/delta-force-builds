@@ -24,7 +24,7 @@ export interface Type {
   name: string
 }
 
-export const weaponTypes = ["AR", "SMG", "Shotgun", "LMG", "MR", "SR", "Pistol"] as const
+export const weaponTypes = ["AR", "SMG", "Shotgun", "LMG", "MR", "SR", "Pistol", "Special"] as const
 export type WeaponType = typeof weaponTypes[number]
 export type ServerType = "global" | "garena"
 export type ModeType = "operation" | "warfare"
