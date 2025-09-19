@@ -115,7 +115,7 @@ async function getBuilds(
 }
 
 export default function Index() {
-  const [sortOption, setSortOption] = useState<SortOption>("-copies");
+  const [sortOption, setSortOption] = useState<SortOption>("-created");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string | undefined>();
   const [serverFilter, setServerFilter] = useState<string | undefined>(
