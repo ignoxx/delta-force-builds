@@ -10,6 +10,7 @@ import { CreateBuildModal } from "~/components/CreateBuildModal";
 import { ServerFilterButtons } from "~/components/ServerButtons";
 import { ModeFilterButtons } from "~/components/ModeFilterButtons";
 import { SeasonQuickFilter } from "~/components/SeasonButtons";
+import { Github } from "lucide-react";
 
 const pepes: string[] = [
   "2652-pepe-gun.png",
@@ -173,7 +174,7 @@ export default function Index() {
                 setIsOpen={setCreateBuildModalOpen}
                 isOpen={createBuildModalOpen}
               />
-              <div className="text-xs text-gray-600 no-underline">
+              <div className="text-xs text-gray-600 no-underline flex items-center">
                 {" "}
                 by{" "}
                 <a
@@ -183,6 +184,15 @@ export default function Index() {
                   rel="noreferrer"
                 >
                   @moonsteroid
+                </a>
+                <a
+                  href="https://github.com/ignoxx/delta-force-builds"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="ml-1 inline-flex items-center opacity-90 hover:opacity-100 transition-opacity text-white"
+                  title="View on GitHub"
+                >
+                  <Github className="w-4 h-4" />
                 </a>
               </div>
             </div>
